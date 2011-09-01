@@ -1,0 +1,7 @@
+Usage: pyloc.py [options]
+
+Options:
+  -h, --help    show this help message and exit
+  -d DIRECTORY  Directory to search
+  -l LANGUAGE   Source language, (java, haskell, python, c)
+  -t            Include tests

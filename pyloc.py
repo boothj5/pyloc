@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os
 from optparse import OptionParser
 
@@ -13,6 +15,9 @@ def is_source(filename):
 
     return include
 
+def is_comment(line):
+    return line.strip().startswith(comments[language])
+
 srcfiles = 0 ;
 loc = 0 ;
 paths = [] ;
@@ -27,19 +32,24 @@ comments = { "java": "//",
              "python": "#" }
 
 parser = OptionParser()
-parser.add_option("-d", "--directory", dest="directory",
+parser.add_option("-d", "", dest="directory",
                   help="Directory to search")
-parser.add_option("-l", "--language", dest="language",
-                  help="Source language")
-parser.add_option("-t", "--tests",
+parser.add_option("-l", "", dest="language",
+                  help="Source language, (java, haskell, python, c)")
+parser.add_option("-t", "",
                   action="store_true", dest="tests", default=False,
                   help="Include tests")
 
 (options, args) = parser.parse_args()
 
+if not options.directory and not options.language:
+    parser.error("You must specify at least a directory and language, try pyloc.py -h")
+
 directory = options.directory
 language = options.language
 tests = options.tests
+
+
 
 print "Folder = " + directory
 print "Language = " + language
@@ -60,7 +70,7 @@ for path in paths:
 for path in paths:
     f = open(path)
     for line in f:
-        if not line.strip().startswith(comments[language]):
+        if not is_comment(line):
             loc = loc + 1         
 
 print
