@@ -3,33 +3,51 @@
 import os
 from optparse import OptionParser
 
+EXTENSIONS = "extensions"
+LINECOMMENTS = "linecomments"
+JAVA = "java"
+HASKELL = "haskell"
+PYTHON = "python"
+C = "c"
+
+languages = { JAVA: 
+                { EXTENSIONS:   [ ".java" ] ,
+                  LINECOMMENTS: [ "//", "/*", "*", "*/" ] } ,
+              HASKELL:
+                { EXTENSIONS:   [ ".hs" , ".lhs" ] ,
+                  LINECOMMENTS: [ "--" ] } ,
+              C:
+                { EXTENSIONS:   [ ".c" ] ,
+                  LINECOMMENTS: [ "//" ] } ,
+              PYTHON:
+                { EXTENSIONS:   [ ".py" ] ,
+                  LINECOMMENTS: [ "#" ] } } 
+
 def is_source(filename):
-    include = False ;
-    correct_ext = filename.endswith(extensions[language])
+    result = False ;
+    correct_ext = False ;
+
+    for ext in languages[language][EXTENSIONS]:
+        if filename.endswith(ext):
+            correct_ext = True
     is_test = "test" in filename or "Test" in filename
     
     if correct_ext:
-        include = True
+        result = True
     if not tests and is_test:
-        include = False   
+        result = False   
 
-    return include
+    return result
 
 def is_comment(line):
-    return line.strip().startswith(comments[language])
+    for comment in languages[language][LINECOMMENTS]:
+        if line.strip().startswith(comment):
+            return True
+    return False
 
 srcfiles = 0 ;
 loc = 0 ;
 paths = [] ;
-
-extensions = { "java": ".java", 
-               "haskell": ".hs",
-               "c": ".c",
-               "python": ".py" }
-comments = { "java": "//",
-             "haskell": "--",
-             "c": "//",
-             "python": "#" }
 
 parser = OptionParser()
 parser.add_option("-d", "", dest="directory",
@@ -48,8 +66,6 @@ if not options.directory and not options.language:
 directory = options.directory
 language = options.language
 tests = options.tests
-
-
 
 print "Folder = " + directory
 print "Language = " + language
