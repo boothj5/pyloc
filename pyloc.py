@@ -5,6 +5,7 @@ from optparse import OptionParser
 
 EXTENSIONS = "extensions"
 LINECOMMENTS = "linecomments"
+COUNT = "count"
 JAVA = "java"
 HASKELL = "haskell"
 PYTHON = "python"
@@ -12,16 +13,20 @@ C = "c"
 
 languages = { JAVA: 
                 { EXTENSIONS:   [ ".java" ] ,
-                  LINECOMMENTS: [ "//", "/*", "*", "*/" ] } ,
+                  LINECOMMENTS: [ "//", "/*", "*", "*/" ] ,
+                  COUNT: 0 } ,
               HASKELL:
                 { EXTENSIONS:   [ ".hs" , ".lhs" ] ,
-                  LINECOMMENTS: [ "--" ] } ,
+                  LINECOMMENTS: [ "--" ] ,
+                  COUNT: 0 } ,
               C:
                 { EXTENSIONS:   [ ".c" , ".h" ] ,
-                  LINECOMMENTS: [ "//" ] } ,
+                  LINECOMMENTS: [ "//" ] ,
+                  COUNT: 0 } ,
               PYTHON:
                 { EXTENSIONS:   [ ".py" ] ,
-                  LINECOMMENTS: [ "#" ] } } 
+                  LINECOMMENTS: [ "#" ] ,
+                  COUNT: 0 } } 
 
 def is_source(filename):
     result = False ;
@@ -45,52 +50,88 @@ def is_comment(line):
             return True
     return False
 
-srcfiles = 0 ;
-loc = 0 ;
-paths = [] ;
+def guess_lang():
+    for dirname, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            basename, extension = os.path.splitext(filename) ;
+            for lang in languages:
+                if extension in languages[lang][EXTENSIONS]:
+                    languages[lang][COUNT] = languages[lang][COUNT] + 1
+
+    result = None
+    highest = 0
+    for lang in languages:
+        if languages[lang][COUNT] > highest:
+            result = lang ;
+            highst = languages[lang][COUNT]
+    
+    return result
+
+guessed_lang = False
+srcfiles = 0
+loc = 0
+paths = []
 
 parser = OptionParser()
 parser.add_option("-d", "", dest="directory",
                   help="Directory to search")
 parser.add_option("-l", "", dest="language",
-                  help="Source language, (java, haskell, python, c)")
+                  help="Source language (java, haskell, python, c), will guess if not specified")
 parser.add_option("-t", "",
                   action="store_true", dest="tests", default=False,
                   help="Include tests")
 
 (options, args) = parser.parse_args()
 
-if not options.directory and not options.language:
-    parser.error("You must specify at least a directory and language, try pyloc.py -h")
+if not options.directory:
+    parser.error("You must specify at least a directory, try pyloc.py -h")
 
 directory = options.directory
-language = options.language
+if options.language:
+    language = options.language
+else:
+    language = guess_lang()
+    guessed_lang = True
 tests = options.tests
 
-print "Folder = " + directory
-print "Language = " + language
-print "Tests = " + str(tests)
+print
+print "PYLOC"
+print "-----"
 print
 
-for dirname, dirnames, filenames in os.walk(directory):
-    for filename in filenames:
-        if is_source(filename):
-            srcfiles = srcfiles + 1
-            paths.append(dirname + "/" + filename)
+if language == None:
+    print "Could not find any code!"
+else:
 
-print "Files:"
 
-for path in paths:
-    print path
+    print "Folder   : " + directory
+    guessed = "" ;
 
-for path in paths:
-    f = open(path)
-    for line in f:
-        if not is_comment(line):
-            loc = loc + 1         
+    if guessed_lang:
+        guessed = " (guessed)"
+
+    print "Language : " + language + guessed
+
+    print "Tests    : " + str(tests)
+    print
+
+    for lang in languages:
+        languages[lang][COUNT] = 0
+
+    for dirname, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            if is_source(filename):
+                languages[language][COUNT] = languages[language][COUNT] + 1
+                paths.append(dirname + "/" + filename)
+
+    for path in paths:
+        f = open(path)
+        for line in f:
+            if not is_comment(line):
+                loc = loc + 1         
+
+    print
+    print "Source files  : " + str(languages[language][COUNT])
+    print "Lines of code : " + str(loc)
 
 print
-print "Source files  : " + str(srcfiles)
-print "Lines of code : " + str(loc)
-
-
