@@ -17,7 +17,7 @@ languages = { JAVA:
                 { EXTENSIONS:   [ ".hs" , ".lhs" ] ,
                   LINECOMMENTS: [ "--" ] } ,
               C:
-                { EXTENSIONS:   [ ".c" ] ,
+                { EXTENSIONS:   [ ".c" , ".h" ] ,
                   LINECOMMENTS: [ "//" ] } ,
               PYTHON:
                 { EXTENSIONS:   [ ".py" ] ,
