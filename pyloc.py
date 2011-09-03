@@ -4,9 +4,6 @@ from optparse import OptionParser
 
 from languages import *
 
-# definitions are as follows:
-# LOC = Total lines, including comments and whitespace
-
 # constants
 CODE = 1
 COMMENT = 2
@@ -91,26 +88,20 @@ def parse_opts():
     parser = OptionParser()
     parser.add_option("-d", "", dest="directory",
                       help="Directory to search")
-    parser.add_option("-l", "", dest="language",
-                      help="Source language (java, haskell, python, c), will guess if not specified")
     parser.add_option("-t", "",
                       action="store_true", dest="tests", default=False,
                       help="Include tests")
     (options, args) = parser.parse_args()
 
     if not options.directory:
-        parser.error("You must specify at least a directory, try pyloc.py -h")
+        parser.error("You must specify a directory, try pyloc.py -h")
     directory = options.directory
 
-    if options.language:
-        language = options.language
-    else:
-        language = guess_lang(directory)
-        guessed_lang = True
+    language = guess_lang(directory)
 
     include_tests = options.tests
 
-    return (directory, language, guessed_lang, include_tests)
+    return (directory, language, include_tests)
 
 def main():
     global in_comment
@@ -118,7 +109,7 @@ def main():
     comment_lines = 0
     whitespace = 0 
     paths = []
-    (directory, language, guessed_lang, include_tests) = parse_opts()
+    (directory, language, include_tests) = parse_opts()
     in_comment = False
 
     print
@@ -149,7 +140,7 @@ def main():
                     whitespace = whitespace + 1          
 
         print "Folder   : " + directory
-        print "Language : " + language + (lambda g : " (guessed)" if g else "")(guessed_lang)
+        print "Language : " + language
         print "Tests    : " + str(include_tests)
         print
         print
