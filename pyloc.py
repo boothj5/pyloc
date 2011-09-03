@@ -3,31 +3,48 @@
 import os
 from optparse import OptionParser
 
+# constants
 EXTENSIONS = "extensions"
 LINECOMMENTS = "linecomments"
+BLOCKSTART = "blockstart"
+BLOCKEND = "blockend"
 COUNT = "count"
 JAVA = "java"
 HASKELL = "haskell"
 PYTHON = "python"
 C = "c"
 
+# language definitions
 languages = { JAVA: 
                 { EXTENSIONS:   [ ".java" ] ,
-                  LINECOMMENTS: [ "//", "/*", "*", "*/" ] ,
+                  LINECOMMENTS: "//" ,
+                  BLOCKSTART:   "/*" ,
+                  BLOCKEND:     "*/" ,
                   COUNT: 0 } ,
               HASKELL:
                 { EXTENSIONS:   [ ".hs" , ".lhs" ] ,
-                  LINECOMMENTS: [ "--" ] ,
+                  LINECOMMENTS: "--" ,
+                  BLOCKSTART:   "{-" ,
+                  BLOCKEND:     "-}"  ,
                   COUNT: 0 } ,
               C:
                 { EXTENSIONS:   [ ".c" , ".h" ] ,
-                  LINECOMMENTS: [ "//" ] ,
+                  LINECOMMENTS: "//" ,
+                  BLOCKSTART:   "/*" ,
+                  BLOCKEND:     "*/" ,
                   COUNT: 0 } ,
               PYTHON:
                 { EXTENSIONS:   [ ".py" ] ,
-                  LINECOMMENTS: [ "#" ] ,
+                  LINECOMMENTS: "#" ,
                   COUNT: 0 } } 
 
+# globals
+guessed_lang = False
+srcfiles = 0
+loc = 0
+paths = []
+
+# functions
 def is_source(filename):
     result = False ;
     correct_ext = False ;
@@ -45,10 +62,40 @@ def is_source(filename):
     return result
 
 def is_comment(line):
-    for comment in languages[language][LINECOMMENTS]:
-        if line.strip().startswith(comment):
+    global in_comment
+    linecmnt = languages[language][LINECOMMENTS]
+
+    if BLOCKSTART in languages[language]:
+        blkstart = languages[language][BLOCKSTART]
+        blkend = languages[language][BLOCKEND]
+
+        if in_comment:
+            if line.strip().endswith(blkend):
+                in_comment = False
+                return True
+    
+        if line.strip().startswith(blkstart) and line.strip().endswith(blkend):
             return True
+    
+        if line.strip().startswith(blkstart):
+            in_comment = True
+            return True
+
+    if line.strip().startswith(linecmnt):
+        return True
+
+    if in_comment:
+        return True
+    
     return False
+
+def is_code(line):
+    if is_comment(line):
+        return False
+    elif line.strip() == "":
+        return False
+    else:
+        return True
 
 def guess_lang():
     for dirname, dirnames, filenames in os.walk(directory):
@@ -67,11 +114,7 @@ def guess_lang():
     
     return result
 
-guessed_lang = False
-srcfiles = 0
-loc = 0
-paths = []
-
+# handle arguments
 parser = OptionParser()
 parser.add_option("-d", "", dest="directory",
                   help="Directory to search")
@@ -94,15 +137,18 @@ else:
     guessed_lang = True
 tests = options.tests
 
+# main script
+
 print
 print "PYLOC"
 print "-----"
 print
 
+in_comment = False
+
 if language == None:
     print "Could not find any code!"
 else:
-
 
     print "Folder   : " + directory
     guessed = "" ;
@@ -127,7 +173,7 @@ else:
     for path in paths:
         f = open(path)
         for line in f:
-            if not is_comment(line):
+            if is_code(line):
                 loc = loc + 1         
 
     print
