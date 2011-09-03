@@ -3,7 +3,6 @@ EXTENSIONS = "extensions"
 LINECOMMENTS = "linecomments"
 BLOCKSTART = "blockstart"
 BLOCKEND = "blockend"
-COUNT = "count"
 
 JAVA = "java"
 HASKELL = "haskell"
@@ -16,26 +15,21 @@ languages = { JAVA:
                 { EXTENSIONS:   [ ".java" ] ,
                   LINECOMMENTS: "//" ,
                   BLOCKSTART:   "/*" ,
-                  BLOCKEND:     "*/" ,
-                  COUNT: 0 } ,
+                  BLOCKEND:     "*/" } ,
               HASKELL:
                 { EXTENSIONS:   [ ".hs" ] ,
                   LINECOMMENTS: "--" ,
                   BLOCKSTART:   "{-" ,
-                  BLOCKEND:     "-}"  ,
-                  COUNT: 0 } ,
+                  BLOCKEND:     "-}" } ,
               C:
                 { EXTENSIONS:   [ ".c" , ".h" ] ,
                   LINECOMMENTS: "//" ,
                   BLOCKSTART:   "/*" ,
-                  BLOCKEND:     "*/" ,
-                  COUNT: 0 } ,
+                  BLOCKEND:     "*/" } ,
               PYTHON:
                 { EXTENSIONS:   [ ".py" ] ,
-                  LINECOMMENTS: "#" ,
-                  COUNT: 0 } ,
+                  LINECOMMENTS: "#" } ,
               SHELL:
                 { EXTENSIONS:   [ ".sh" ] ,
-                  LINECOMMENTS: "#" ,
-                  COUNT: 0 } }
+                  LINECOMMENTS: "#" } }
 

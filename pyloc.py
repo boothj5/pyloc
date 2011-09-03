@@ -9,23 +9,25 @@ CODE = 1
 COMMENT = 2
 SPACE = 3
 
+SRC_FILES = "src_files"
+CODE_LINES = "code_lines"
+COMM_LINES = "comm_lines"
+WHITESPACE = "whitespace"
+
 # globals
 in_comment = False
 
 # functions
-def is_source(filename, language, include_tests):
+def is_source(filename, language):
     result = False ;
     correct_ext = False ;
 
     for ext in languages[language][EXTENSIONS]:
         if filename.endswith(ext):
             correct_ext = True
-    is_test = "test" in filename.lower()
 
     if correct_ext:
         result = True
-    if not include_tests and is_test:
-        result = False   
 
     return result
 
@@ -65,21 +67,37 @@ def line_type(line, language):
     else:
         return CODE
 
-def guess_lang(directory):
+def init_stats(directory, lang_stats):
     for dirname, dirnames, filenames in os.walk(directory):
         for filename in filenames:
-            basename, extension = os.path.splitext(filename) ;
+            basename, extension = os.path.splitext(filename)
             for lang in languages:
                 if extension in languages[lang][EXTENSIONS]:
-                    languages[lang][COUNT] = languages[lang][COUNT] + 1
+                    if not lang in lang_stats:
+                        lang_stats[lang] = { SRC_FILES: 0 , 
+                                             CODE_LINES: 0 , 
+                                             COMM_LINES: 0 ,
+                                             WHITESPACE: 0 } 
+                    lang_stats[lang][SRC_FILES] = lang_stats[lang][SRC_FILES] + 1
+                    f = open(dirname + "/" + filename)
+                    for line in f:
+                        ltype = line_type(line, lang)
+                        if ltype == CODE:
+                            lang_stats[lang][CODE_LINES] = lang_stats[lang][CODE_LINES] + 1
+                        elif ltype == COMMENT:
+                            lang_stats[lang][COMM_LINES] = lang_stats[lang][COMM_LINES]  + 1
+                        else:
+                            lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
+
+def guess_lang(lang_stats):
     result = None
     highest = 0
 
-    for lang in languages:
-        if languages[lang][COUNT] > highest:
+    for lang in lang_stats:
+        if lang_stats[lang][SRC_FILES] > highest:
             result = lang ;
-            highst = languages[lang][COUNT]
+            highest = lang_stats[lang][SRC_FILES]
     
     return result
 
@@ -88,29 +106,37 @@ def parse_opts():
     parser = OptionParser()
     parser.add_option("-d", "", dest="directory",
                       help="Directory to search")
-    parser.add_option("-t", "",
-                      action="store_true", dest="tests", default=False,
-                      help="Include tests")
     (options, args) = parser.parse_args()
 
     if not options.directory:
         parser.error("You must specify a directory, try pyloc.py -h")
+    
     directory = options.directory
 
-    language = guess_lang(directory)
+    return directory
 
-    include_tests = options.tests
-
-    return (directory, language, include_tests)
+def show_lang_stats(lang_stats):
+    for lang in lang_stats:
+        print "LANG : " + lang
+        print "\tfiles: " + str(lang_stats[lang][SRC_FILES])
+        print "\tSrc lines : " + str(lang_stats[lang][CODE_LINES])
+        print "\tcmnt lines : " + str(lang_stats[lang][COMM_LINES])
+        print "\twht lines : " + str(lang_stats[lang][WHITESPACE])
 
 def main():
     global in_comment
+
+    lang_stats = {}
+
     code_lines = 0
     comment_lines = 0
     whitespace = 0 
     paths = []
-    (directory, language, include_tests) = parse_opts()
+    directory = parse_opts()
     in_comment = False
+    init_stats(directory, lang_stats)
+    language = guess_lang(lang_stats)
+    show_lang_stats(lang_stats)
 
     print
     print "PYLOC"
@@ -119,13 +145,9 @@ def main():
     if language == None:
         print "Could not find any code!"
     else:
-        for lang in languages:
-            languages[lang][COUNT] = 0
-
         for dirname, dirnames, filenames in os.walk(directory):
             for filename in filenames:
-                if is_source(filename, language, include_tests):
-                    languages[language][COUNT] = languages[language][COUNT] + 1
+                if is_source(filename, language):
                     paths.append(dirname + "/" + filename)
 
         for path in paths:
@@ -141,10 +163,9 @@ def main():
 
         print "Folder   : " + directory
         print "Language : " + language
-        print "Tests    : " + str(include_tests)
         print
         print
-        print "Source files      : " + str(languages[language][COUNT])
+        print "Source files      : " + str(lang_stats[language][SRC_FILES])
         print "Lines of code     : " + str(code_lines)
         print "Lines of comments : "  + str(comment_lines)
         print "Whitespace        : " + str(whitespace)
