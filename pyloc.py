@@ -4,6 +4,14 @@ from optparse import OptionParser
 
 from languages import *
 
+# definitions are as follows:
+# LOC = Total lines, including comments and whitespace
+
+# constants
+CODE = 1
+COMMENT = 2
+SPACE = 3
+
 # globals
 in_comment = False
 
@@ -52,13 +60,13 @@ def is_comment(line, language):
     
     return False
 
-def is_code(line, language):
+def line_type(line, language):
     if is_comment(line, language):
-        return False
+        return COMMENT
     elif line.strip() == "":
-        return False
+        return SPACE
     else:
-        return True
+        return CODE
 
 def guess_lang(directory):
     for dirname, dirnames, filenames in os.walk(directory):
@@ -106,7 +114,9 @@ def parse_opts():
 
 def main():
     global in_comment
-    loc = 0 
+    code_lines = 0
+    comment_lines = 0
+    whitespace = 0 
     paths = []
     (directory, language, guessed_lang, include_tests) = parse_opts()
     in_comment = False
@@ -130,16 +140,25 @@ def main():
         for path in paths:
             f = open(path)
             for line in f:
-                if is_code(line, language):
-                    loc = loc + 1         
+                ltype = line_type(line, language)
+                if ltype == CODE:
+                    code_lines = code_lines + 1
+                elif ltype == COMMENT:
+                    comment_lines = comment_lines + 1
+                else:
+                    whitespace = whitespace + 1          
 
         print "Folder   : " + directory
         print "Language : " + language + (lambda g : " (guessed)" if g else "")(guessed_lang)
         print "Tests    : " + str(include_tests)
         print
         print
-        print "Source files  : " + str(languages[language][COUNT])
-        print "Lines of code : " + str(loc)
+        print "Source files      : " + str(languages[language][COUNT])
+        print "Lines of code     : " + str(code_lines)
+        print "Lines of comments : "  + str(comment_lines)
+        print "Whitespace        : " + str(whitespace)
+        print
+        print "Physical SLOC : " + str(code_lines + comment_lines + whitespace)
     print
 
 if __name__ == "__main__":
