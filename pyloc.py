@@ -80,15 +80,18 @@ def init_stats(directory, lang_stats):
                                              COMM_LINES: 0 ,
                                              WHITESPACE: 0 } 
                     lang_stats[lang][SRC_FILES] = lang_stats[lang][SRC_FILES] + 1
-                    f = open(dirname + "/" + filename)
-                    for line in f:
-                        ltype = line_type(line, lang)
-                        if ltype == CODE:
-                            lang_stats[lang][CODE_LINES] = lang_stats[lang][CODE_LINES] + 1
-                        elif ltype == COMMENT:
-                            lang_stats[lang][COMM_LINES] = lang_stats[lang][COMM_LINES]  + 1
-                        else:
-                            lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
+                    process_file(dirname + "/" + filename, lang, lang_stats)
+
+def process_file(full_path, lang, lang_stats):
+    f = open(full_path)
+    for line in f:
+        ltype = line_type(line, lang)
+        if ltype == CODE:
+            lang_stats[lang][CODE_LINES] = lang_stats[lang][CODE_LINES] + 1
+        elif ltype == COMMENT:
+            lang_stats[lang][COMM_LINES] = lang_stats[lang][COMM_LINES]  + 1
+        else:
+            lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
 def show_lang_stats(lang_stats):
     for lang in lang_stats:
@@ -114,7 +117,6 @@ def show_summary(lang_stats):
     print
 
 def main():
-    global in_comment
     lang_stats = {}
     directory = sys.argv[1]
 
