@@ -10,6 +10,7 @@ PYTHON = "Python"
 C = "C"
 SHELL = "Shell"
 SCHEME = "Scheme"
+LUA = "Lua"
 
 # language definitions
 languages = { JAVA:
@@ -37,5 +38,10 @@ languages = { JAVA:
                 { EXTENSIONS:   [ ".scm" ] ,
                   LINECOMMENTS: ";" ,
                   BLOCKSTART:   "#|" ,
-                  BLOCKEND:     "|#" } }
+                  BLOCKEND:     "|#" } ,
+              LUA :
+                { EXTENSIONS:   [ ".lua" ] ,
+                  LINECOMMENTS: "--" ,
+                  BLOCKSTART:   "--[[" ,
+                  BLOCKEND:     "]]" } }
 
