@@ -18,7 +18,7 @@ WHITESPACE = "whitespace"
 TOTAL_LINES = "total_lines"
 
 # globals
-in_comment = False
+in_comment = ""
 
 # functions
 def parse_opts():
@@ -46,21 +46,20 @@ def is_comment(line, language):
     global in_comment
     linecmnt = languages[language][LINECOMMENTS]
 
-    if BLOCKSTART in languages[language]:
-        blkstart = languages[language][BLOCKSTART]
-        blkend = languages[language][BLOCKEND]
+    if BLOCKCOMMENTS in languages[language]:
+        for blockstart, blockend in languages[language][BLOCKCOMMENTS]:
+            if in_comment == blockstart:
 
-        if in_comment:
-            if line.strip().endswith(blkend):
-                in_comment = False
+                if line.strip().endswith(blockend):
+                    in_comment = ""
+                    return True
+
+            if line.strip().startswith(blockstart) and line.strip().endswith(blockend):
                 return True
 
-        if line.strip().startswith(blkstart) and line.strip().endswith(blkend):
-            return True
-
-        if line.strip().startswith(blkstart):
-            in_comment = True
-            return True
+            if line.strip().startswith(blockstart):
+                in_comment = blockstart
+                return True
 
     if line.strip().startswith(linecmnt):
         return True

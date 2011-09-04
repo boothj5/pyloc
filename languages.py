@@ -1,10 +1,10 @@
 # constants
 EXTENSIONS = "extensions"
 LINECOMMENTS = "linecomments"
-BLOCKSTART = "blockstart"
-BLOCKEND = "blockend"
+BLOCKCOMMENTS = "blockcomments"
 
 JAVA = "Java"
+JSP = "JSP"
 HASKELL = "Haskell"
 PYTHON = "Python"
 C = "C"
@@ -14,34 +14,41 @@ LUA = "Lua"
 
 # language definitions
 languages = { JAVA:
-                { EXTENSIONS:   [ ".java" ] ,
-                  LINECOMMENTS: "//" ,
-                  BLOCKSTART:   "/*" ,
-                  BLOCKEND:     "*/" } ,
-              HASKELL:
-                { EXTENSIONS:   [ ".hs" ] ,
-                  LINECOMMENTS: "--" ,
-                  BLOCKSTART:   "{-" ,
-                  BLOCKEND:     "-}" } ,
-              C:
-                { EXTENSIONS:   [ ".c" , ".h" ] ,
-                  LINECOMMENTS: "//" ,
-                  BLOCKSTART:   "/*" ,
-                  BLOCKEND:     "*/" } ,
-              PYTHON:
-                { EXTENSIONS:   [ ".py" ] ,
-                  LINECOMMENTS: "#" } ,
-              SHELL:
-                { EXTENSIONS:   [ ".sh" ] ,
-                  LINECOMMENTS: "#" } ,
-              SCHEME:
-                { EXTENSIONS:   [ ".scm" ] ,
-                  LINECOMMENTS: ";" ,
-                  BLOCKSTART:   "#|" ,
-                  BLOCKEND:     "|#" } ,
-              LUA :
-                { EXTENSIONS:   [ ".lua" ] ,
-                  LINECOMMENTS: "--" ,
-                  BLOCKSTART:   "--[[" ,
-                  BLOCKEND:     "]]" } }
+                { EXTENSIONS:    [ ".java" ] ,
+                  LINECOMMENTS:  "//" ,
+                  BLOCKCOMMENTS: [ ( "/*" , "*/" ) ] } ,
 
+              JSP:
+                { EXTENSIONS:    [ ".jsp" , 
+                                   ".jspf" ] ,
+                  LINECOMMENTS:  "//" ,
+                  BLOCKCOMMENTS: [ ( "/*" , "*/" ) ,
+                                   ( "<!--" , "-->" ) ] } ,
+
+              HASKELL:
+                { EXTENSIONS:    [ ".hs" ] ,
+                  LINECOMMENTS:  "--" ,
+                  BLOCKCOMMENTS: [ ( "{-" , "-}" ) ] } ,
+
+              C:
+                { EXTENSIONS:    [ ".c" , ".h" ] ,
+                  LINECOMMENTS:  "//" ,
+                  BLOCKCOMMENTS: [ ( "/*" , "*/" ) ] } ,
+
+              PYTHON:
+                { EXTENSIONS:    [ ".py" ] ,
+                  LINECOMMENTS:  "#" } ,
+
+              SHELL:
+                { EXTENSIONS:    [ ".sh" ] ,
+                  LINECOMMENTS:  "#" } ,
+
+              SCHEME:
+                { EXTENSIONS:    [ ".scm" ] ,
+                  LINECOMMENTS:  ";" ,
+                  BLOCKCOMMENTS: [ ( "#|" , "|#" ) ] } ,
+
+              LUA :
+                { EXTENSIONS:    [ ".lua" ] ,
+                  LINECOMMENTS:  "--" ,
+                  BLOCKCOMMENTS: [ ( "--[[" , "]]" ) ] } }
