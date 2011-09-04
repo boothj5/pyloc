@@ -89,18 +89,6 @@ def init_stats(directory, lang_stats):
                         else:
                             lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
-
-def guess_lang(lang_stats):
-    result = None
-    highest = 0
-
-    for lang in lang_stats:
-        if lang_stats[lang][SRC_FILES] > highest:
-            result = lang ;
-            highest = lang_stats[lang][SRC_FILES]
-    
-    return result
-
 def parse_opts():
     guessed_lang = False 
     parser = OptionParser()
@@ -117,61 +105,45 @@ def parse_opts():
 
 def show_lang_stats(lang_stats):
     for lang in lang_stats:
-        print "LANG : " + lang
-        print "\tfiles: " + str(lang_stats[lang][SRC_FILES])
-        print "\tSrc lines : " + str(lang_stats[lang][CODE_LINES])
-        print "\tcmnt lines : " + str(lang_stats[lang][COMM_LINES])
-        print "\twht lines : " + str(lang_stats[lang][WHITESPACE])
+        print "Language : " + lang
+        print "\tFiles         : " + str(lang_stats[lang][SRC_FILES])
+        print "\tCode lines    : " + str(lang_stats[lang][CODE_LINES])
+        print "\tComment lines : " + str(lang_stats[lang][COMM_LINES])
+        print "\tWhitespace    : " + str(lang_stats[lang][WHITESPACE])
+        print
+        print "\tPhysical SLOC : " + str(lang_stats[lang][CODE_LINES] + 
+                                    lang_stats[lang][COMM_LINES] + 
+                                    lang_stats[lang][WHITESPACE])
+        print
+
+def show_summary(lang_stats):
+    total_phyloc = 0
+    for lang in lang_stats:
+        total_phyloc = total_phyloc + (lang_stats[lang][CODE_LINES] + 
+                                      lang_stats[lang][COMM_LINES] + 
+                                      lang_stats[lang][WHITESPACE])
+
+    print "TOTAL physical SLOC : " + str(total_phyloc)
+    print
 
 def main():
     global in_comment
-
     lang_stats = {}
-
-    code_lines = 0
-    comment_lines = 0
-    whitespace = 0 
-    paths = []
     directory = parse_opts()
-    in_comment = False
     init_stats(directory, lang_stats)
-    language = guess_lang(lang_stats)
-    show_lang_stats(lang_stats)
 
     print
     print "PYLOC"
     print "-----"
+    print "Folder   : " + directory
     print
-    if language == None:
+    if not lang_stats:
         print "Could not find any code!"
+        print
     else:
-        for dirname, dirnames, filenames in os.walk(directory):
-            for filename in filenames:
-                if is_source(filename, language):
-                    paths.append(dirname + "/" + filename)
+        show_lang_stats(lang_stats)
+        show_summary(lang_stats)
 
-        for path in paths:
-            f = open(path)
-            for line in f:
-                ltype = line_type(line, language)
-                if ltype == CODE:
-                    code_lines = code_lines + 1
-                elif ltype == COMMENT:
-                    comment_lines = comment_lines + 1
-                else:
-                    whitespace = whitespace + 1          
-
-        print "Folder   : " + directory
-        print "Language : " + language
-        print
-        print
-        print "Source files      : " + str(lang_stats[language][SRC_FILES])
-        print "Lines of code     : " + str(code_lines)
-        print "Lines of comments : "  + str(comment_lines)
-        print "Whitespace        : " + str(whitespace)
-        print
-        print "Physical SLOC : " + str(code_lines + comment_lines + whitespace)
-    print
 
 if __name__ == "__main__":
     main()

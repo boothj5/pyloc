@@ -4,11 +4,11 @@ LINECOMMENTS = "linecomments"
 BLOCKSTART = "blockstart"
 BLOCKEND = "blockend"
 
-JAVA = "java"
-HASKELL = "haskell"
-PYTHON = "python"
-C = "c"
-SHELL = "shell"
+JAVA = "Java"
+HASKELL = "Haskell"
+PYTHON = "Python"
+C = "C"
+SHELL = "Shell"
 
 # language definitions
 languages = { JAVA:
