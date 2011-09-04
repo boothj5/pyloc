@@ -9,6 +9,7 @@ HASKELL = "Haskell"
 PYTHON = "Python"
 C = "C"
 SHELL = "Shell"
+SCHEME = "Scheme"
 
 # language definitions
 languages = { JAVA:
@@ -31,5 +32,10 @@ languages = { JAVA:
                   LINECOMMENTS: "#" } ,
               SHELL:
                 { EXTENSIONS:   [ ".sh" ] ,
-                  LINECOMMENTS: "#" } }
+                  LINECOMMENTS: "#" } ,
+              SCHEME:
+                { EXTENSIONS:   [ ".scm" ] ,
+                  LINECOMMENTS: ";" ,
+                  BLOCKSTART:   "#|" ,
+                  BLOCKEND:     "|#" } }
 

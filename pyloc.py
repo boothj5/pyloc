@@ -19,6 +19,14 @@ WHITESPACE = "whitespace"
 in_comment = False
 
 # functions
+def parse_opts():
+    parser = OptionParser()
+    parser.add_option("-v", "",
+                      action="store_true", dest="verbose", default=False,
+                      help="Verbose output")    
+
+    return parser.parse_args()
+
 def is_source(filename, language):
     result = False ;
     correct_ext = False ;
@@ -93,18 +101,25 @@ def process_file(full_path, lang, lang_stats):
         else:
             lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
-def show_lang_stats(lang_stats):
+def show_lang_stats(lang_stats, verbose):
     for lang in lang_stats:
-        print "Language : " + lang
-        print "\tFiles         : " + str(lang_stats[lang][SRC_FILES])
-        print "\tCode lines    : " + str(lang_stats[lang][CODE_LINES])
-        print "\tComment lines : " + str(lang_stats[lang][COMM_LINES])
-        print "\tWhitespace    : " + str(lang_stats[lang][WHITESPACE])
-        print
-        print "\tPhysical SLOC : " + str(lang_stats[lang][CODE_LINES] + 
+        if verbose:
+            print "Language : " + lang
+            print "\tFiles         : " + str(lang_stats[lang][SRC_FILES])
+            print "\tCode lines    : " + str(lang_stats[lang][CODE_LINES])
+            print "\tComment lines : " + str(lang_stats[lang][COMM_LINES])
+            print "\tWhitespace    : " + str(lang_stats[lang][WHITESPACE])
+            print
+            print "\tPhysical SLOC : " + str(lang_stats[lang][CODE_LINES] + 
                                     lang_stats[lang][COMM_LINES] + 
                                     lang_stats[lang][WHITESPACE])
-        print
+            print
+        else:
+            print lang + ": " + str(lang_stats[lang][CODE_LINES] + 
+                                    lang_stats[lang][COMM_LINES] + 
+                                    lang_stats[lang][WHITESPACE])
+
+
 
 def show_summary(lang_stats):
     total_phyloc = 0
@@ -113,12 +128,14 @@ def show_summary(lang_stats):
                                       lang_stats[lang][COMM_LINES] + 
                                       lang_stats[lang][WHITESPACE])
 
+    print
     print "TOTAL physical SLOC : " + str(total_phyloc)
     print
 
 def main():
     lang_stats = {}
-    directory = sys.argv[1]
+    (options, args) = parse_opts()
+    directory = args[0]
 
     if not directory:
         print "You must specify a directory"
@@ -133,7 +150,7 @@ def main():
             print "Could not find any code!"
             print
         else:
-            show_lang_stats(lang_stats)
+            show_lang_stats(lang_stats, options.verbose)
             show_summary(lang_stats)
 
 if __name__ == "__main__":
