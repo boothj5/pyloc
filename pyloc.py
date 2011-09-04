@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 import sys
+import operator
 from optparse import OptionParser
 
 from languages import *
@@ -14,6 +15,7 @@ SRC_FILES = "src_files"
 CODE_LINES = "code_lines"
 COMM_LINES = "comm_lines"
 WHITESPACE = "whitespace"
+TOTAL_LINES = "total_lines"
 
 # globals
 in_comment = False
@@ -86,13 +88,15 @@ def init_stats(directory, lang_stats):
                         lang_stats[lang] = { SRC_FILES: 0 , 
                                              CODE_LINES: 0 , 
                                              COMM_LINES: 0 ,
-                                             WHITESPACE: 0 } 
+                                             WHITESPACE: 0 ,
+                                             TOTAL_LINES: 0 } 
                     lang_stats[lang][SRC_FILES] = lang_stats[lang][SRC_FILES] + 1
                     process_file(dirname + "/" + filename, lang, lang_stats)
 
 def process_file(full_path, lang, lang_stats):
     f = open(full_path)
     for line in f:
+        lang_stats[lang][TOTAL_LINES] = lang_stats[lang][TOTAL_LINES] + 1
         ltype = line_type(line, lang)
         if ltype == CODE:
             lang_stats[lang][CODE_LINES] = lang_stats[lang][CODE_LINES] + 1
@@ -101,32 +105,36 @@ def process_file(full_path, lang, lang_stats):
         else:
             lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
-def show_lang_stats(lang_stats, verbose):
+def show_lang_stats(lang_stats):
     for lang in lang_stats:
-        if verbose:
-            print "Language : " + lang
-            print "\tFiles         : " + str(lang_stats[lang][SRC_FILES])
-            print "\tCode lines    : " + str(lang_stats[lang][CODE_LINES])
-            print "\tComment lines : " + str(lang_stats[lang][COMM_LINES])
-            print "\tWhitespace    : " + str(lang_stats[lang][WHITESPACE])
-            print
-            print "\tPhysical SLOC : " + str(lang_stats[lang][CODE_LINES] + 
-                                    lang_stats[lang][COMM_LINES] + 
-                                    lang_stats[lang][WHITESPACE])
-            print
-        else:
-            print lang + ": " + str(lang_stats[lang][CODE_LINES] + 
-                                    lang_stats[lang][COMM_LINES] + 
-                                    lang_stats[lang][WHITESPACE])
-
-
+        print "Language : " + lang
+        print "\tFiles         : " + str(lang_stats[lang][SRC_FILES])
+        print "\tCode lines    : " + str(lang_stats[lang][CODE_LINES])
+        print "\tComment lines : " + str(lang_stats[lang][COMM_LINES])
+        print "\tWhitespace    : " + str(lang_stats[lang][WHITESPACE])
+        print
+        print "\tPhysical SLOC : " + str(lang_stats[lang][TOTAL_LINES])
+        print
 
 def show_summary(lang_stats):
+    print "Summary"
+    print "-------"
+
     total_phyloc = 0
     for lang in lang_stats:
-        total_phyloc = total_phyloc + (lang_stats[lang][CODE_LINES] + 
-                                      lang_stats[lang][COMM_LINES] + 
-                                      lang_stats[lang][WHITESPACE])
+        total_phyloc = total_phyloc + lang_stats[lang][TOTAL_LINES]
+
+    counts = []
+    for lang in lang_stats:
+        name = lang
+        total = lang_stats[lang][TOTAL_LINES]
+        counts.append((name, total))
+
+    sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
+
+    for lang in sorted_counts:
+        name, count = lang
+        print name + ': {:.2%}'.format(float(count)/total_phyloc)
 
     print
     print "TOTAL physical SLOC : " + str(total_phyloc)
@@ -150,7 +158,8 @@ def main():
             print "Could not find any code!"
             print
         else:
-            show_lang_stats(lang_stats, options.verbose)
+            if options.verbose:
+                show_lang_stats(lang_stats)
             show_summary(lang_stats)
 
 if __name__ == "__main__":
