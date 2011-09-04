@@ -1,6 +1,30 @@
-Usage: pyloc.py [options]
+Usage: pyloc.py directory
 
-Options:
-  -h, --help    show this help message and exit
-  -d DIRECTORY  Directory to search
-  -t            Include tests
+Where directory is the directory to scan.
+
+Example output:
+
+$ ./pyloc.py /home/james/projects-git/haskellhead/
+
+PYLOC
+-----
+Folder   : /home/james/projects-git/haskellhead/
+
+Language : Shell
+        Files         : 1
+        Code lines    : 12
+        Comment lines : 1
+        Whitespace    : 4
+
+        Physical SLOC : 17
+
+Language : Haskell
+        Files         : 15
+        Code lines    : 1326
+        Comment lines : 150
+        Whitespace    : 282
+
+        Physical SLOC : 1758
+
+TOTAL physical SLOC : 1775
+

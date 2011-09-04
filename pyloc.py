@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import sys
 from optparse import OptionParser
 
 from languages import *
@@ -89,20 +90,6 @@ def init_stats(directory, lang_stats):
                         else:
                             lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
-def parse_opts():
-    guessed_lang = False 
-    parser = OptionParser()
-    parser.add_option("-d", "", dest="directory",
-                      help="Directory to search")
-    (options, args) = parser.parse_args()
-
-    if not options.directory:
-        parser.error("You must specify a directory, try pyloc.py -h")
-    
-    directory = options.directory
-
-    return directory
-
 def show_lang_stats(lang_stats):
     for lang in lang_stats:
         print "Language : " + lang
@@ -129,21 +116,23 @@ def show_summary(lang_stats):
 def main():
     global in_comment
     lang_stats = {}
-    directory = parse_opts()
-    init_stats(directory, lang_stats)
+    directory = sys.argv[1]
 
-    print
-    print "PYLOC"
-    print "-----"
-    print "Folder   : " + directory
-    print
-    if not lang_stats:
-        print "Could not find any code!"
-        print
+    if not directory:
+        print "You must specify a directory"
     else:
-        show_lang_stats(lang_stats)
-        show_summary(lang_stats)
-
+        init_stats(directory, lang_stats)
+        print
+        print "PYLOC"
+        print "-----"
+        print "Folder   : " + directory
+        print
+        if not lang_stats:
+            print "Could not find any code!"
+            print
+        else:
+            show_lang_stats(lang_stats)
+            show_summary(lang_stats)
 
 if __name__ == "__main__":
     main()
