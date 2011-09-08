@@ -29,25 +29,19 @@ def parse_opts():
 
     return parser.parse_args()
 
-def is_source(filename, language):
-    result = False ;
-    correct_ext = False ;
-
-    for ext in languages[language][EXTENSIONS]:
+def is_source(filename, lang):
+    for ext in languages[lang][EXTENSIONS]:
         if filename.endswith(ext):
-            correct_ext = True
+            return True
 
-    if correct_ext:
-        result = True
+    return False
 
-    return result
-
-def is_comment(line, language):
+def is_comment(line, lang):
     global in_comment
-    linecmnt = languages[language][LINECOMMENTS]
+    linecmnt = languages[lang][LINECOMMENTS]
 
-    if BLOCKCOMMENTS in languages[language]:
-        for blockstart, blockend in languages[language][BLOCKCOMMENTS]:
+    if BLOCKCOMMENTS in languages[lang]:
+        for blockstart, blockend in languages[lang][BLOCKCOMMENTS]:
             if in_comment == blockstart:
 
                 if line.strip().endswith(blockend):
@@ -69,8 +63,8 @@ def is_comment(line, language):
     
     return False
 
-def line_type(line, language):
-    if is_comment(line, language):
+def line_type(line, lang):
+    if is_comment(line, lang):
         return COMMENT
     elif line.strip() == "":
         return SPACE
