@@ -1,30 +1,52 @@
-Usage: pyloc.py directory
+Usage: pyloc.py directory [-v]
 
-Where directory is the directory to scan.
+Where directory is the directory to scan and -v will cause verbose output.
 
-Example output:
+Example basic output:
+---------------------
 
-$ ./pyloc.py /home/james/projects-git/haskellhead/
+[james@collingwood pyloc]$ ./pyloc.py /home/james/projects-git/haskellhead/
 
-PYLOC
------
-Folder   : /home/james/projects-git/haskellhead/
+    PYLOC
+    -----
+    Folder   : /home/james/projects-git/haskellhead/
 
-Language : Shell
-        Files         : 1
-        Code lines    : 12
-        Comment lines : 1
-        Whitespace    : 4
+    Summary
+    -------
+    Haskell: 99.04%
+    Shell: 0.96%
 
-        Physical SLOC : 17
+    TOTAL physical SLOC : 1775
 
-Language : Haskell
-        Files         : 15
-        Code lines    : 1326
-        Comment lines : 150
-        Whitespace    : 282
+Example verbose output:
+-----------------------
 
-        Physical SLOC : 1758
+[james@collingwood pyloc]$ ./pyloc.py /home/james/projects-git/haskellhead/ -v
 
-TOTAL physical SLOC : 1775
+    PYLOC
+    -----
+    Folder   : /home/james/projects-git/haskellhead/
+
+    Language : Shell
+            Files         : 1
+            Code lines    : 12
+            Comment lines : 1
+            Whitespace    : 4
+
+            Physical SLOC : 17
+
+    Language : Haskell
+            Files         : 15
+            Code lines    : 1326
+            Comment lines : 150
+            Whitespace    : 282
+
+            Physical SLOC : 1758
+
+    Summary
+    -------
+    Haskell: 99.04%
+    Shell: 0.96%
+
+    TOTAL physical SLOC : 1775
 
