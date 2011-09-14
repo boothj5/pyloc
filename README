@@ -21,32 +21,50 @@ Example basic output:
 Example verbose output:
 -----------------------
 
-[james@collingwood pyloc]$ ./pyloc.py /home/james/projects-git/haskellhead/ -v
+    [james@collingwood pyloc]$ ./pyloc.py /home/james/projects-svn/mosaic/src/ -v
 
     PYLOC
     -----
-    Folder   : /home/james/projects-git/haskellhead/
+    Folder   : /home/james/projects-svn/mosaic/src/
+
+    Language : XML
+            Files         : 300
+            Code lines    : 71,584
+            Comment lines : 1,448
+            Whitespace    : 1,775
+
+            Physical SLOC : 74,807
+
+    Language : JSP
+            Files         : 1,040
+            Code lines    : 109,318
+            Comment lines : 25,220
+            Whitespace    : 10,834
+
+            Physical SLOC : 145,372
 
     Language : Shell
-            Files         : 1
-            Code lines    : 12
-            Comment lines : 1
-            Whitespace    : 4
+            Files         : 2
+            Code lines    : 107
+            Comment lines : 26
+            Whitespace    : 27
 
-            Physical SLOC : 17
+            Physical SLOC : 160
 
-    Language : Haskell
-            Files         : 15
-            Code lines    : 1326
-            Comment lines : 150
-            Whitespace    : 282
+    Language : Java
+            Files         : 11,548
+            Code lines    : 890,396
+            Comment lines : 337,247
+            Whitespace    : 221,236
 
-            Physical SLOC : 1758
+            Physical SLOC : 1,448,879
 
     Summary
     -------
-    Haskell: 99.04%
-    Shell: 0.96%
+    Java: 86.80%
+    JSP: 8.71%
+    XML: 4.48%
+    Shell: 0.01%
 
-    TOTAL physical SLOC : 1775
+    TOTAL physical SLOC : 1,669,218
 

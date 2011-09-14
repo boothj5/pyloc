@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import locale
 import os
 import sys
 import operator
@@ -37,7 +38,6 @@ def is_source(filename, lang):
 
 def is_comment(line, lang):
     global in_comment
-    linecmnt = languages[lang][LINECOMMENTS]
 
     if BLOCKCOMMENTS in languages[lang]:
         for blockstart, blockend in languages[lang][BLOCKCOMMENTS]:
@@ -53,8 +53,10 @@ def is_comment(line, lang):
                 in_comment = blockstart
                 return True
 
-    if line.strip().startswith(linecmnt):
-        return True
+    if LINECOMMENTS in languages[lang]:
+        linecmnt = languages[lang][LINECOMMENTS]
+        if line.strip().startswith(linecmnt):
+            return True
 
     if in_comment:
         return True
@@ -99,12 +101,12 @@ def process_file(full_path, lang, lang_stats):
 def show_lang_stats(lang_stats):
     for lang in lang_stats:
         print "Language : " + lang
-        print "\tFiles         : " + str(lang_stats[lang][SRC_FILES])
-        print "\tCode lines    : " + str(lang_stats[lang][CODE_LINES])
-        print "\tComment lines : " + str(lang_stats[lang][COMM_LINES])
-        print "\tWhitespace    : " + str(lang_stats[lang][WHITESPACE])
+        print "\tFiles         : " + format_thousands(lang_stats[lang][SRC_FILES])
+        print "\tCode lines    : " + format_thousands(lang_stats[lang][CODE_LINES])
+        print "\tComment lines : " + format_thousands(lang_stats[lang][COMM_LINES])
+        print "\tWhitespace    : " + format_thousands(lang_stats[lang][WHITESPACE])
         print
-        print "\tPhysical SLOC : " + str(lang_stats[lang][TOTAL_LINES])
+        print "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES])
         print
 
 def show_summary(lang_stats):
@@ -126,10 +128,14 @@ def show_summary(lang_stats):
         print name + ': {0:.2%}'.format(float(count)/total_phyloc)
 
     print
-    print "TOTAL physical SLOC : " + str(total_phyloc)
+    print "TOTAL physical SLOC : " + format_thousands(total_phyloc)
     print
 
+def format_thousands(number):
+    return locale.format("%d", number, grouping=True)
+
 def main():
+    locale.setlocale(locale.LC_ALL, 'en_US')
     lang_stats = {}
     (options, args) = parse_opts()
     directory = args[0]

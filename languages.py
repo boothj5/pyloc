@@ -11,6 +11,7 @@ C = "C"
 SHELL = "Shell"
 SCHEME = "Scheme"
 LUA = "Lua"
+XML = "XML"
 
 # language definitions
 languages = { JAVA:
@@ -47,6 +48,10 @@ languages = { JAVA:
                 { EXTENSIONS:    [ ".scm" ] ,
                   LINECOMMENTS:  ";" ,
                   BLOCKCOMMENTS: [ ( "#|" , "|#" ) ] } ,
+
+              XML:
+                { EXTENSIONS:    [ ".xml" ] ,
+                  BLOCKCOMMENTS: [ ( "<!--" , "-->" ) ] } ,
 
               LUA :
                 { EXTENSIONS:    [ ".lua" ] ,
