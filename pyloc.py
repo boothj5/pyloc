@@ -100,11 +100,10 @@ def process_file(full_path, lang, lang_stats):
 
 def show_lang_stats(lang_stats):
     for lang in lang_stats:
-        print "Language : " + lang
-        print "\tFiles         : " + format_thousands(lang_stats[lang][SRC_FILES])
-        print "\tCode lines    : " + format_thousands(lang_stats[lang][CODE_LINES])
-        print "\tComment lines : " + format_thousands(lang_stats[lang][COMM_LINES])
-        print "\tWhitespace    : " + format_thousands(lang_stats[lang][WHITESPACE])
+        print lang + " (" + format_thousands(lang_stats[lang][SRC_FILES]) + " files) :"
+        print "\tCode       : " + format_thousands(lang_stats[lang][CODE_LINES])
+        print "\tComments   : " + format_thousands(lang_stats[lang][COMM_LINES])
+        print "\tWhitespace : " + format_thousands(lang_stats[lang][WHITESPACE])
         print
         print "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES])
         print
