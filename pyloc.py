@@ -123,7 +123,7 @@ def show_summary(lang_stats):
 
     for lang in sorted_counts:
         name, count = lang
-        print name + ': {:.2%}'.format(float(count)/total_phyloc)
+        print name + ': {0:.2%}'.format(float(count)/total_phyloc)
 
     print
     print "TOTAL physical SLOC : " + str(total_phyloc)
