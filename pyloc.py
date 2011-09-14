@@ -33,7 +33,6 @@ def is_source(filename, lang):
     for ext in languages[lang][EXTENSIONS]:
         if filename.endswith(ext):
             return True
-
     return False
 
 def is_comment(line, lang):
@@ -43,7 +42,6 @@ def is_comment(line, lang):
     if BLOCKCOMMENTS in languages[lang]:
         for blockstart, blockend in languages[lang][BLOCKCOMMENTS]:
             if in_comment == blockstart:
-
                 if line.strip().endswith(blockend):
                     in_comment = ""
                     return True
@@ -114,11 +112,9 @@ def show_summary(lang_stats):
     print "-------"
 
     total_phyloc = 0
-    for lang in lang_stats:
-        total_phyloc = total_phyloc + lang_stats[lang][TOTAL_LINES]
-
     counts = []
     for lang in lang_stats:
+        total_phyloc = total_phyloc + lang_stats[lang][TOTAL_LINES]
         name = lang
         total = lang_stats[lang][TOTAL_LINES]
         counts.append((name, total))
