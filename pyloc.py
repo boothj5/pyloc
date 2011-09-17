@@ -99,18 +99,21 @@ def process_file(full_path, lang, lang_stats):
             lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
 
 def show_lang_stats(lang_stats):
+    result = ""
     for lang in lang_stats:
-        print lang + " (" + format_thousands(lang_stats[lang][SRC_FILES]) + " files) :"
-        print "\tCode       : " + format_thousands(lang_stats[lang][CODE_LINES])
-        print "\tComments   : " + format_thousands(lang_stats[lang][COMM_LINES])
-        print "\tWhitespace : " + format_thousands(lang_stats[lang][WHITESPACE])
-        print
-        print "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES])
-        print
+        result = result + lang + " (" + format_thousands(lang_stats[lang][SRC_FILES]) + " files) :\n"
+        result = result + "\tCode       : " + format_thousands(lang_stats[lang][CODE_LINES]) + "\n"
+        result = result + "\tComments   : " + format_thousands(lang_stats[lang][COMM_LINES]) + "\n"
+        result = result + "\tWhitespace : " + format_thousands(lang_stats[lang][WHITESPACE]) + "\n"
+        result = result + "\n"
+        result = result +  "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES]) + "\n"
+        result = result + "\n"
+    return result
 
 def show_summary(lang_stats):
-    print "Summary"
-    print "-------"
+    result = ""
+    result = result + "Summary\n"
+    result = result + "-------\n"
 
     total_phyloc = 0
     counts = []
@@ -124,11 +127,13 @@ def show_summary(lang_stats):
 
     for lang in sorted_counts:
         name, count = lang
-        print name + ': {0:.2%}'.format(float(count)/total_phyloc)
+        result = result + name + ': {0:.2%}\n'.format(float(count)/total_phyloc)
 
-    print
-    print "TOTAL physical SLOC : " + format_thousands(total_phyloc)
-    print
+    result = result + "\n"
+    result = result + "TOTAL physical SLOC : " + format_thousands(total_phyloc) + "\n"
+    result = result + "\n"
+    
+    return result
 
 def format_thousands(number):
     return locale.format("%d", number, grouping=True)
@@ -153,8 +158,10 @@ def main():
             print
         else:
             if options.verbose:
-                show_lang_stats(lang_stats)
-            show_summary(lang_stats)
+                result = show_lang_stats(lang_stats)
+                print(result)
+            result = show_summary(lang_stats)
+            print(result)
 
 if __name__ == "__main__":
     main()
