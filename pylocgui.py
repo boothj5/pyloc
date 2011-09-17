@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import wx
+from wx.lib.agw.piectrl import PieCtrl, PiePart
 import os
 import locale
 import pyloc
@@ -7,11 +8,15 @@ import pyloc
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title, size=(800,600))
-        self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.splitter = wx.SplitterWindow(self, -1)
+
+        self.pie = wx.Panel(self.splitter, -1) 
+        self.text = wx.Panel(self.splitter, -1)
+        self.splitter.SplitVertically(self.pie, self.text)
+
         self.CreateStatusBar()
 
         filemenu = wx.Menu()
-#        menu_open_file = filemenu.Append(wx.ID_OPEN, "&Open File", " Open a file")
         menu_open_dir = filemenu.Append(wx.ID_ANY, "Open &Directory", " Open a directory")
         filemenu.AppendSeparator()
         menu_about = filemenu.Append(wx.ID_ABOUT, "&About", " About Pyloc")
@@ -22,12 +27,9 @@ class MyFrame(wx.Frame):
         menubar.Append(filemenu, "&File")
         self.SetMenuBar(menubar)       
 
-#        self.Bind(wx.EVT_MENU, self.on_open_file, menu_open_file)
         self.Bind(wx.EVT_MENU, self.on_open_dir, menu_open_dir)
         self.Bind(wx.EVT_MENU, self.on_about, menu_about)
         self.Bind(wx.EVT_MENU, self.on_exit, menu_exit)
-
-        self.Show(True)
 
     def on_about(self, event):
         dialog = wx.MessageDialog(self, "Simple LOC counter", "About", wx.OK)
@@ -36,17 +38,6 @@ class MyFrame(wx.Frame):
 
     def on_exit(self, event):
         self.Close(True)
-
-#    def on_open_file(self, event):
-#        self.dirname = "" 
-#        dialog = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.*", wx.OPEN)
-#        if dialog.ShowModal() == wx.ID_OK:
-#            self.filename = dialog.GetFilename()
-#            self.dirname = dialog.GetDirectory()
-#            f = open(os.path.join(self.dirname, self.filename), 'r')
-#            self.control.SetValue(f.read())
-#            f.close()
-#        dialog.Destroy()
 
     def on_open_dir(self, event):
         self.dirname = ""
@@ -62,16 +53,54 @@ class MyFrame(wx.Frame):
         if not self.lang_stats:
             self.result = self.result + "Could not find any code!\n"
         else:
-            self.result = self.result + pyloc.show_lang_stats(self.lang_stats)
             self.result = self.result + pyloc.show_summary(self.lang_stats)
-       
-        self.control.SetValue(self.result)
+            self.result = self.result + pyloc.show_lang_stats(self.lang_stats)
+        
+        self.results = wx.TextCtrl(self.text, style=wx.TE_MULTILINE, size=wx.Size(400, 600))
+        self.results.WriteText(self.result)
+        self.results.SetEditable(False)
+
+        self.mypie = PieCtrl(self.pie, -1, wx.DefaultPosition, wx.Size(400,600))
+
+        self.mypie.GetLegend().SetTransparent(True)
+        self.mypie.GetLegend().SetHorizontalBorder(10)
+        self.mypie.GetLegend().SetWindowStyle(wx.STATIC_BORDER)
+        self.mypie.GetLegend().SetLabelFont(wx.Font(10, wx.FONTFAMILY_DEFAULT,
+                                                   wx.FONTSTYLE_NORMAL,
+                                                   wx.FONTWEIGHT_NORMAL,
+                                                   False, "Courier New"))
+        self.mypie.GetLegend().SetLabelColour(wx.Colour(0, 0, 127))
+
+        colours = [ wx.Colour(200, 50, 50) ,
+                    wx.Colour(50, 200, 50) ,
+                    wx.Colour(50, 50, 200) ,
+                    wx.Colour(100, 100, 200) ,
+                    wx.Colour(200, 200, 200) ,
+                    wx.Colour(0, 0, 200) ,
+                    wx.Colour(200, 0, 200) ,
+                    wx.Colour(0, 200, 200) ,
+                    wx.Colour(0, 0, 50) ,
+                    wx.Colour(0, 50, 0) ]
+        
+        colour = 0
+        for lang in self.lang_stats:
+            part = PiePart()
+    
+            lines = pyloc.format_thousands(self.lang_stats[lang][pyloc.TOTAL_LINES])
+            part.SetLabel(lang + " (" + str(lines) + ")")
+            part.SetValue(self.lang_stats[lang][pyloc.TOTAL_LINES])
+            part.SetColour(colours[colour])
+            colour = colour + 1
+            self.mypie._series.append(part)
+
 
 def main():
     locale.setlocale(locale.LC_ALL, 'en_US')
 
     app = wx.App(False)
     frame = MyFrame(None, "Pyloc")
+    frame.Show(True)
+    app.SetTopWindow(frame)
     app.MainLoop()
 
 if __name__ == "__main__":
