@@ -8,17 +8,14 @@ import pyloc
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(800,600), 
-                style = wx.MINIMIZE_BOX | 
-                        wx.MAXIMIZE_BOX | 
-                        wx.SYSTEM_MENU | 
-                        wx.CAPTION | 
-                        wx.CLOSE_BOX | 
-                        wx.CLIP_CHILDREN )
+        wx.Frame.__init__(self, parent, title=title, size=(800,600))
+        
         self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_NOBORDER)
 
-        self.pie = wx.Panel(self.splitter, -1) 
-        self.text = wx.Panel(self.splitter, -1)
+        self.pie_panel = wx.Panel(self.splitter, -1)
+        self.pie_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.text_panel = wx.Panel(self.splitter, -1)
+        self.text_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
 
         self.CreateStatusBar()
 
@@ -46,27 +43,27 @@ class MyFrame(wx.Frame):
         self.Close(True)
 
     def on_open_dir(self, event):
-        self.dirname = ""
+        dirname = ""
         dialog = wx.DirDialog(self, "Choose a directory")
         if dialog.ShowModal() == wx.ID_OK:
-            self.dirname = dialog.GetPath()
+            dirname = dialog.GetPath()
         dialog.Destroy()
-        self.lang_stats = {}
-        pyloc.init_stats(self.dirname, self.lang_stats)
+        lang_stats = {}
+        pyloc.init_stats(dirname, lang_stats)
 
-        self.result = "\n" + "PYLOC\n" + "-----\n"
-        self.result = self.result + "Folder   : " + self.dirname + "\n\n"
-        if not self.lang_stats:
-            self.result = self.result + "Could not find any code!\n"
+        text = "\n" + "PYLOC\n" + "-----\n"
+        text = text + "Folder   : " + dirname + "\n\n"
+        if not lang_stats:
+            text = text + "Could not find any code!\n"
         else:
-            self.result = self.result + pyloc.show_summary(self.lang_stats)
-            self.result = self.result + pyloc.show_lang_stats(self.lang_stats)
+            text = text + pyloc.show_summary(lang_stats)
+            text = text + pyloc.show_lang_stats(lang_stats)
         
-        self.results = wx.TextCtrl(self.text, style=wx.TE_MULTILINE, size=wx.Size(400, 600))
-        self.results.WriteText(self.result)
-        self.results.SetEditable(False)
+        self.stats = wx.TextCtrl(self.text_panel, style=wx.TE_MULTILINE, size=wx.Size(400, 600))
+        self.stats.WriteText(text)
+        self.stats.SetEditable(False)
 
-        self.langpie = PieCtrl(self.pie, -1, wx.DefaultPosition, wx.Size(400,600))
+        self.langpie = PieCtrl(self.pie_panel, -1, wx.DefaultPosition, wx.Size(400,600))
         self.langpie.SetAngle(radians(25))
         self.langpie.GetLegend().SetTransparent(True)
         self.langpie.GetLegend().SetHorizontalBorder(10)
@@ -90,9 +87,9 @@ class MyFrame(wx.Frame):
         
         colour = 0
         counts = []
-        for lang in self.lang_stats:
+        for lang in lang_stats:
             name = lang
-            total = self.lang_stats[lang][pyloc.TOTAL_LINES]
+            total = lang_stats[lang][pyloc.TOTAL_LINES]
             counts.append((name, total))
 
         sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
@@ -107,7 +104,7 @@ class MyFrame(wx.Frame):
             colour = colour + 1
             self.langpie._series.append(part)
         
-        self.splitter.SplitVertically(self.pie, self.text)
+        self.splitter.SplitVertically(self.pie_panel, self.text_panel)
 
 def main():
     locale.setlocale(locale.LC_ALL, 'en_US')
