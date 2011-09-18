@@ -7,12 +7,11 @@ import pyloc
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(800,600))
-        self.splitter = wx.SplitterWindow(self, -1)
+        wx.Frame.__init__(self, parent, title=title, size=(800,600), style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX | wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN )
+        self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_NOBORDER)
 
         self.pie = wx.Panel(self.splitter, -1) 
         self.text = wx.Panel(self.splitter, -1)
-        self.splitter.SplitVertically(self.pie, self.text)
 
         self.CreateStatusBar()
 
@@ -74,8 +73,8 @@ class MyFrame(wx.Frame):
         colours = [ wx.Colour(200, 50, 50) ,
                     wx.Colour(50, 200, 50) ,
                     wx.Colour(50, 50, 200) ,
-                    wx.Colour(100, 100, 200) ,
-                    wx.Colour(200, 200, 200) ,
+                    wx.Colour(100, 0, 200) ,
+                    wx.Colour(200, 200, 0) ,
                     wx.Colour(0, 0, 200) ,
                     wx.Colour(200, 0, 200) ,
                     wx.Colour(0, 200, 200) ,
@@ -83,15 +82,27 @@ class MyFrame(wx.Frame):
                     wx.Colour(0, 50, 0) ]
         
         colour = 0
+
+        counts = []
         for lang in self.lang_stats:
+            name = lang
+            total = self.lang_stats[lang][pyloc.TOTAL_LINES]
+            counts.append((name, total))
+
+        sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
+
+        for lang, count in sorted_counts:
             part = PiePart()
     
-            lines = pyloc.format_thousands(self.lang_stats[lang][pyloc.TOTAL_LINES])
+            lines = pyloc.format_thousands(count)
             part.SetLabel(lang + " (" + str(lines) + ")")
-            part.SetValue(self.lang_stats[lang][pyloc.TOTAL_LINES])
+            part.SetValue(count)
             part.SetColour(colours[colour])
             colour = colour + 1
             self.mypie._series.append(part)
+        
+        
+        self.splitter.SplitVertically(self.pie, self.text)
 
 
 def main():
