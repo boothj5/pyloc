@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import wx
+from math import radians
 from wx.lib.agw.piectrl import PieCtrl, PiePart
 import os
 import locale
@@ -7,7 +8,13 @@ import pyloc
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(800,600), style = wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX | wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN )
+        wx.Frame.__init__(self, parent, title=title, size=(800,600), 
+                style = wx.MINIMIZE_BOX | 
+                        wx.MAXIMIZE_BOX | 
+                        wx.SYSTEM_MENU | 
+                        wx.CAPTION | 
+                        wx.CLOSE_BOX | 
+                        wx.CLIP_CHILDREN )
         self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_NOBORDER)
 
         self.pie = wx.Panel(self.splitter, -1) 
@@ -59,16 +66,16 @@ class MyFrame(wx.Frame):
         self.results.WriteText(self.result)
         self.results.SetEditable(False)
 
-        self.mypie = PieCtrl(self.pie, -1, wx.DefaultPosition, wx.Size(400,600))
-
-        self.mypie.GetLegend().SetTransparent(True)
-        self.mypie.GetLegend().SetHorizontalBorder(10)
-        self.mypie.GetLegend().SetWindowStyle(wx.STATIC_BORDER)
-        self.mypie.GetLegend().SetLabelFont(wx.Font(10, wx.FONTFAMILY_DEFAULT,
+        self.langpie = PieCtrl(self.pie, -1, wx.DefaultPosition, wx.Size(400,600))
+        self.langpie.SetAngle(radians(25))
+        self.langpie.GetLegend().SetTransparent(True)
+        self.langpie.GetLegend().SetHorizontalBorder(10)
+        self.langpie.GetLegend().SetWindowStyle(wx.STATIC_BORDER)
+        self.langpie.GetLegend().SetLabelFont(wx.Font(10, wx.FONTFAMILY_DEFAULT,
                                                    wx.FONTSTYLE_NORMAL,
                                                    wx.FONTWEIGHT_NORMAL,
                                                    False, "Courier New"))
-        self.mypie.GetLegend().SetLabelColour(wx.Colour(0, 0, 127))
+        self.langpie.GetLegend().SetLabelColour(wx.Colour(0, 0, 127))
 
         colours = [ wx.Colour(200, 50, 50) ,
                     wx.Colour(50, 200, 50) ,
@@ -82,7 +89,6 @@ class MyFrame(wx.Frame):
                     wx.Colour(0, 50, 0) ]
         
         colour = 0
-
         counts = []
         for lang in self.lang_stats:
             name = lang
@@ -99,15 +105,12 @@ class MyFrame(wx.Frame):
             part.SetValue(count)
             part.SetColour(colours[colour])
             colour = colour + 1
-            self.mypie._series.append(part)
-        
+            self.langpie._series.append(part)
         
         self.splitter.SplitVertically(self.pie, self.text)
 
-
 def main():
     locale.setlocale(locale.LC_ALL, 'en_US')
-
     app = wx.App(False)
     frame = MyFrame(None, "Pyloc")
     frame.Show(True)
