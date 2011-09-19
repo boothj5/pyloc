@@ -9,7 +9,7 @@ import pylocstats
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title, size=(800,600))
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+
         self.CreateStatusBar()
 
         filemenu = wx.Menu()
@@ -27,6 +27,8 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_about, menu_about)
         self.Bind(wx.EVT_MENU, self.on_exit, menu_exit)
 
+        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+
     def on_about(self, event):
         dialog = wx.MessageDialog(self, "Simple LOC counter", "About", wx.OK)
         dialog.ShowModal()
@@ -41,7 +43,9 @@ class MyFrame(wx.Frame):
         if dialog.ShowModal() == wx.ID_OK:
             dirname = dialog.GetPath()
         dialog.Destroy()
+        self.sizer.DeleteWindows()
         lang_stats = {}
+        
         pylocstats.init_stats(dirname, lang_stats)
 
         text = "\n" + "PYLOC\n" + "-----\n"
@@ -52,11 +56,11 @@ class MyFrame(wx.Frame):
             text = text + pylocstats.show_summary(lang_stats)
             text = text + pylocstats.show_lang_stats(lang_stats)
         
-        self.stats = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.stats = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(400,600))
         self.stats.WriteText(text)
         self.stats.SetEditable(False)
 
-        self.langpie = PieCtrl(self, -1, wx.DefaultPosition)
+        self.langpie = PieCtrl(self, -1, wx.DefaultPosition, size=(400,600))
         self.langpie.SetAngle(radians(25))
         self.langpie.GetLegend().SetTransparent(True)
         self.langpie.GetLegend().SetHorizontalBorder(10)
@@ -97,18 +101,19 @@ class MyFrame(wx.Frame):
             colour = colour + 1
             self.langpie._series.append(part)
         
-        self.sizer.Add(self.langpie, 1, wx.EXPAND)
-        self.sizer.Add(self.stats, 1, wx.EXPAND)
+        self.sizer.Add(self.langpie, 1, wx.EXPAND | wx.ALIGN_LEFT)
+        self.sizer.Add(self.stats, 1, wx.EXPAND | wx.ALIGN_RIGHT)
         self.SetSizer(self.sizer)
         self.SetAutoLayout(1) 
         self.sizer.Fit(self)
+        self.Layout()
 
 def main():
     locale.setlocale(locale.LC_ALL, '')
     app = wx.App(False)
     frame = MyFrame(None, "Pyloc")
     frame.Show(True)
-    app.SetTopWindow(frame)
+#    app.SetTopWindow(frame)
     app.MainLoop()
 
 if __name__ == "__main__":
