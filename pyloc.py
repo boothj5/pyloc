@@ -9,14 +9,7 @@ import pylocstats
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title, size=(800,600))
-        
-        self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_NOBORDER)
-
-        self.pie_panel = wx.Panel(self.splitter, -1)
-        self.pie_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
-        self.text_panel = wx.Panel(self.splitter, -1)
-        self.text_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
-
+        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.CreateStatusBar()
 
         filemenu = wx.Menu()
@@ -59,11 +52,11 @@ class MyFrame(wx.Frame):
             text = text + pylocstats.show_summary(lang_stats)
             text = text + pylocstats.show_lang_stats(lang_stats)
         
-        self.stats = wx.TextCtrl(self.text_panel, style=wx.TE_MULTILINE, size=wx.Size(400, 600))
+        self.stats = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.stats.WriteText(text)
         self.stats.SetEditable(False)
 
-        self.langpie = PieCtrl(self.pie_panel, -1, wx.DefaultPosition, wx.Size(400,600))
+        self.langpie = PieCtrl(self, -1, wx.DefaultPosition)
         self.langpie.SetAngle(radians(25))
         self.langpie.GetLegend().SetTransparent(True)
         self.langpie.GetLegend().SetHorizontalBorder(10)
@@ -104,7 +97,11 @@ class MyFrame(wx.Frame):
             colour = colour + 1
             self.langpie._series.append(part)
         
-        self.splitter.SplitVertically(self.pie_panel, self.text_panel)
+        self.sizer.Add(self.langpie, 1, wx.EXPAND)
+        self.sizer.Add(self.stats, 1, wx.EXPAND)
+        self.SetSizer(self.sizer)
+        self.SetAutoLayout(1) 
+        self.sizer.Fit(self)
 
 def main():
     locale.setlocale(locale.LC_ALL, '')
