@@ -1,167 +1,119 @@
 #!/usr/bin/python
-import locale
+import wx
+from math import radians
+from wx.lib.agw.piectrl import PieCtrl, PiePart
 import os
-import sys
-import operator
-from optparse import OptionParser
+import locale
+import pylocstats
 
-from languages import *
+class MyFrame(wx.Frame):
+    def __init__(self, parent, title):
+        wx.Frame.__init__(self, parent, title=title, size=(800,600))
+        
+        self.splitter = wx.SplitterWindow(self, -1, style=wx.SP_NOBORDER)
 
-# constants
-CODE = 1
-COMMENT = 2
-SPACE = 3
+        self.pie_panel = wx.Panel(self.splitter, -1)
+        self.pie_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.text_panel = wx.Panel(self.splitter, -1)
+        self.text_panel.SetBackgroundColour(wx.Colour(255, 255, 255))
 
-SRC_FILES = "src_files"
-CODE_LINES = "code_lines"
-COMM_LINES = "comm_lines"
-WHITESPACE = "whitespace"
-TOTAL_LINES = "total_lines"
+        self.CreateStatusBar()
 
-# globals
-in_comment = ""
+        filemenu = wx.Menu()
+        menu_open_dir = filemenu.Append(wx.ID_ANY, "Open &Directory", " Open a directory")
+        filemenu.AppendSeparator()
+        menu_about = filemenu.Append(wx.ID_ABOUT, "&About", " About Pyloc")
+        filemenu.AppendSeparator()
+        menu_exit = filemenu.Append(wx.ID_EXIT, "E&xit", " Exit Pyloc")
 
-# functions
-def parse_opts():
-    parser = OptionParser()
-    parser.add_option("-v", "",
-                      action="store_true", dest="verbose", default=False,
-                      help="Verbose output")    
+        menubar = wx.MenuBar()
+        menubar.Append(filemenu, "&File")
+        self.SetMenuBar(menubar)       
 
-    return parser.parse_args()
+        self.Bind(wx.EVT_MENU, self.on_open_dir, menu_open_dir)
+        self.Bind(wx.EVT_MENU, self.on_about, menu_about)
+        self.Bind(wx.EVT_MENU, self.on_exit, menu_exit)
 
-def is_source(filename, lang):
-    for ext in languages[lang][EXTENSIONS]:
-        if filename.endswith(ext):
-            return True
-    return False
+    def on_about(self, event):
+        dialog = wx.MessageDialog(self, "Simple LOC counter", "About", wx.OK)
+        dialog.ShowModal()
+        dialog.Destroy()
 
-def is_comment(line, lang):
-    global in_comment
+    def on_exit(self, event):
+        self.Close(True)
 
-    if BLOCKCOMMENTS in languages[lang]:
-        for blockstart, blockend in languages[lang][BLOCKCOMMENTS]:
-            if in_comment == blockstart:
-                if line.strip().endswith(blockend):
-                    in_comment = ""
-                    return True
+    def on_open_dir(self, event):
+        dirname = ""
+        dialog = wx.DirDialog(self, "Choose a directory")
+        if dialog.ShowModal() == wx.ID_OK:
+            dirname = dialog.GetPath()
+        dialog.Destroy()
+        lang_stats = {}
+        pylocstats.init_stats(dirname, lang_stats)
 
-            if line.strip().startswith(blockstart) and line.strip().endswith(blockend):
-                return True
-
-            if line.strip().startswith(blockstart):
-                in_comment = blockstart
-                return True
-
-    if LINECOMMENTS in languages[lang]:
-        linecmnt = languages[lang][LINECOMMENTS]
-        if line.strip().startswith(linecmnt):
-            return True
-
-    if in_comment:
-        return True
-    
-    return False
-
-def line_type(line, lang):
-    if is_comment(line, lang):
-        return COMMENT
-    elif line.strip() == "":
-        return SPACE
-    else:
-        return CODE
-
-def init_stats(directory, lang_stats):
-    for dirname, dirnames, filenames in os.walk(directory):
-        for filename in filenames:
-            basename, extension = os.path.splitext(filename)
-            for lang in languages:
-                if extension in languages[lang][EXTENSIONS]:
-                    if not lang in lang_stats:
-                        lang_stats[lang] = { SRC_FILES: 0 , 
-                                             CODE_LINES: 0 , 
-                                             COMM_LINES: 0 ,
-                                             WHITESPACE: 0 ,
-                                             TOTAL_LINES: 0 } 
-                    lang_stats[lang][SRC_FILES] = lang_stats[lang][SRC_FILES] + 1
-                    process_file(dirname + "/" + filename, lang, lang_stats)
-
-def process_file(full_path, lang, lang_stats):
-    f = open(full_path)
-    for line in f:
-        lang_stats[lang][TOTAL_LINES] = lang_stats[lang][TOTAL_LINES] + 1
-        ltype = line_type(line, lang)
-        if ltype == CODE:
-            lang_stats[lang][CODE_LINES] = lang_stats[lang][CODE_LINES] + 1
-        elif ltype == COMMENT:
-            lang_stats[lang][COMM_LINES] = lang_stats[lang][COMM_LINES]  + 1
+        text = "\n" + "PYLOC\n" + "-----\n"
+        text = text + "Folder   : " + dirname + "\n\n"
+        if not lang_stats:
+            text = text + "Could not find any code!\n"
         else:
-            lang_stats[lang][WHITESPACE] = lang_stats[lang][WHITESPACE] + 1
+            text = text + pylocstats.show_summary(lang_stats)
+            text = text + pylocstats.show_lang_stats(lang_stats)
+        
+        self.stats = wx.TextCtrl(self.text_panel, style=wx.TE_MULTILINE, size=wx.Size(400, 600))
+        self.stats.WriteText(text)
+        self.stats.SetEditable(False)
 
-def show_lang_stats(lang_stats):
-    result = ""
-    for lang in lang_stats:
-        result = result + lang + " (" + format_thousands(lang_stats[lang][SRC_FILES]) + " files) :\n"
-        result = result + "\tCode       : " + format_thousands(lang_stats[lang][CODE_LINES]) + "\n"
-        result = result + "\tComments   : " + format_thousands(lang_stats[lang][COMM_LINES]) + "\n"
-        result = result + "\tWhitespace : " + format_thousands(lang_stats[lang][WHITESPACE]) + "\n"
-        result = result + "\n"
-        result = result +  "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES]) + "\n"
-        result = result + "\n"
-    return result
+        self.langpie = PieCtrl(self.pie_panel, -1, wx.DefaultPosition, wx.Size(400,600))
+        self.langpie.SetAngle(radians(25))
+        self.langpie.GetLegend().SetTransparent(True)
+        self.langpie.GetLegend().SetHorizontalBorder(10)
+        self.langpie.GetLegend().SetWindowStyle(wx.STATIC_BORDER)
+        self.langpie.GetLegend().SetLabelFont(wx.Font(10, wx.FONTFAMILY_DEFAULT,
+                                                   wx.FONTSTYLE_NORMAL,
+                                                   wx.FONTWEIGHT_NORMAL,
+                                                   False, "Courier New"))
+        self.langpie.GetLegend().SetLabelColour(wx.Colour(0, 0, 127))
 
-def show_summary(lang_stats):
-    result = ""
-    result = result + "Summary\n"
-    result = result + "-------\n"
+        colours = [ wx.Colour(200, 50, 50) ,
+                    wx.Colour(50, 200, 50) ,
+                    wx.Colour(50, 50, 200) ,
+                    wx.Colour(100, 0, 200) ,
+                    wx.Colour(200, 200, 0) ,
+                    wx.Colour(0, 0, 200) ,
+                    wx.Colour(200, 0, 200) ,
+                    wx.Colour(0, 200, 200) ,
+                    wx.Colour(0, 0, 50) ,
+                    wx.Colour(0, 50, 0) ]
+        
+        colour = 0
+        counts = []
+        for lang in lang_stats:
+            name = lang
+            total = lang_stats[lang][pylocstats.TOTAL_LINES]
+            counts.append((name, total))
 
-    total_phyloc = 0
-    counts = []
-    for lang in lang_stats:
-        total_phyloc = total_phyloc + lang_stats[lang][TOTAL_LINES]
-        name = lang
-        total = lang_stats[lang][TOTAL_LINES]
-        counts.append((name, total))
+        sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
 
-    sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
-
-    for lang in sorted_counts:
-        name, count = lang
-        result = result + name + ': {0:.2%}\n'.format(float(count)/total_phyloc)
-
-    result = result + "\n"
-    result = result + "TOTAL physical SLOC : " + format_thousands(total_phyloc) + "\n"
-    result = result + "\n"
+        for lang, count in sorted_counts:
+            part = PiePart()
     
-    return result
-
-def format_thousands(number):
-    return locale.format("%d", number, grouping=True)
+            lines = pylocstats.format_thousands(count)
+            part.SetLabel(lang + " (" + str(lines) + ")")
+            part.SetValue(count)
+            part.SetColour(colours[colour])
+            colour = colour + 1
+            self.langpie._series.append(part)
+        
+        self.splitter.SplitVertically(self.pie_panel, self.text_panel)
 
 def main():
-    locale.setlocale(locale.LC_ALL, 'en_US')
-    lang_stats = {}
-    (options, args) = parse_opts()
-    directory = args[0]
-
-    if not directory:
-        print "You must specify a directory"
-    else:
-        init_stats(directory, lang_stats)
-        print
-        print "PYLOC"
-        print "-----"
-        print "Folder   : " + directory
-        print
-        if not lang_stats:
-            print "Could not find any code!"
-            print
-        else:
-            if options.verbose:
-                result = show_lang_stats(lang_stats)
-                print(result)
-            result = show_summary(lang_stats)
-            print(result)
+    locale.setlocale(locale.LC_ALL, '')
+    app = wx.App(False)
+    frame = MyFrame(None, "Pyloc")
+    frame.Show(True)
+    app.SetTopWindow(frame)
+    app.MainLoop()
 
 if __name__ == "__main__":
     main()
+
