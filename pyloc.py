@@ -1,7 +1,9 @@
 #!/usr/bin/python
+from languages import *
 import wx
 from math import radians
 from wx.lib.agw.piectrl import PieCtrl, PiePart
+import wx.lib.agw.pyprogress as Progress
 import os
 import locale
 import pylocstats
@@ -42,13 +44,50 @@ class MyFrame(wx.Frame):
         dialog = wx.DirDialog(self, "Choose a directory")
         action = dialog.ShowModal() 
         if action == wx.ID_OK:
+            self.SetStatusText("Preparing...")
             dirname = dialog.GetPath()
             dialog.Destroy()
             self.sizer.DeleteWindows()
             lang_stats = {}
-        
-            pylocstats.init_stats(dirname, lang_stats)
+ 
+            num_files = 0 ;
 
+            for root, subFolders, files in os.walk(dirname):
+                for f in files:
+                    num_files = num_files + 1 ;
+
+            self.SetStatusText("Scanning...")
+            dlg = wx.ProgressDialog("PYLOC Scan",
+                                    "Scanning source files...",
+                                    maximum = num_files,
+                                    parent=self,
+                                    style = wx.PD_APP_MODAL
+                                    #| wx.PD_ELAPSED_TIME
+                                    | wx.PD_AUTO_HIDE
+                                    #| wx.PD_ESTIMATED_TIME
+                                    | wx.PD_REMAINING_TIME
+                                   )
+ 
+            count = 0
+ 
+            for directory, dirnames, filenames in os.walk(dirname):
+                for filename in filenames:
+                    count += 1
+                    dlg.Update(count)
+                    basename, extension = os.path.splitext(filename)
+                    for lang in languages:
+                        if extension in languages[lang][EXTENSIONS]:
+                            if not lang in lang_stats:
+                                lang_stats[lang] = { pylocstats.SRC_FILES: 0 ,
+                                                     pylocstats.CODE_LINES: 0 ,
+                                                     pylocstats.COMM_LINES: 0 ,
+                                                     pylocstats.WHITESPACE: 0 ,
+                                                     pylocstats.TOTAL_LINES: 0 }
+                            lang_stats[lang][pylocstats.SRC_FILES] = lang_stats[lang][pylocstats.SRC_FILES] + 1
+                            pylocstats.process_file(directory + "/" + filename, lang, lang_stats)
+
+
+            dlg.Destroy()
             text = "\n" + "PYLOC\n" + "-----\n"
             text = text + "Folder   : " + dirname + "\n\n"
             if not lang_stats:
@@ -102,6 +141,7 @@ class MyFrame(wx.Frame):
                 colour = colour + 1
                 self.langpie._series.append(part)
         
+            self.SetStatusText("Done.")
             self.sizer.Add(self.langpie, 1, wx.EXPAND | wx.ALIGN_LEFT)
             self.sizer.Add(self.stats, 1, wx.EXPAND | wx.ALIGN_RIGHT)
             self.SetSizer(self.sizer)
@@ -114,7 +154,7 @@ class MyFrame(wx.Frame):
 def main():
     locale.setlocale(locale.LC_ALL, '')
     app = wx.App(False)
-    frame = MyFrame(None, "Pyloc")
+    frame = MyFrame(None, "PYLOC")
     frame.Show(True)
 #    app.SetTopWindow(frame)
     app.MainLoop()
