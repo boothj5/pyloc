@@ -85,13 +85,12 @@ class MyFrame(wx.Frame):
 
 
             dlg.Destroy()
-            text = "\n" + "PYLOC\n" + "-----\n"
-            text = text + "Folder   : " + self.dirname + "\n\n"
+            text = "Folder   : " + self.dirname + "\n\n"
             if not lang_stats:
-                text = text + "Could not find any code!\n"
+                text += "Could not find any code!\n"
             else:
-                text = text + pylocstats.show_summary(lang_stats)
-                text = text + pylocstats.show_lang_stats(lang_stats)
+                text += pylocstats.show_summary(lang_stats)
+                text += pylocstats.show_lang_stats(lang_stats)
         
             self.stats = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(400,600))
             self.stats.WriteText(text)

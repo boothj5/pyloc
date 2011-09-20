@@ -101,19 +101,15 @@ def process_file(full_path, lang, lang_stats):
 def show_lang_stats(lang_stats):
     result = ""
     for lang in lang_stats:
-        result = result + lang + " (" + format_thousands(lang_stats[lang][SRC_FILES]) + " files) :\n"
-        result = result + "\tCode       : " + format_thousands(lang_stats[lang][CODE_LINES]) + "\n"
-        result = result + "\tComments   : " + format_thousands(lang_stats[lang][COMM_LINES]) + "\n"
-        result = result + "\tWhitespace : " + format_thousands(lang_stats[lang][WHITESPACE]) + "\n"
-        result = result + "\n"
-        result = result +  "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES]) + "\n"
-        result = result + "\n"
+        result += lang + " (" + format_thousands(lang_stats[lang][SRC_FILES]) + " files) :\n"
+        result += "\tCode       : " + format_thousands(lang_stats[lang][CODE_LINES]) + "\n"
+        result += "\tComments   : " + format_thousands(lang_stats[lang][COMM_LINES]) + "\n"
+        result += "\tWhitespace : " + format_thousands(lang_stats[lang][WHITESPACE]) + "\n\n"
+        result += "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES]) + "\n\n"
     return result
 
 def show_summary(lang_stats):
-    result = ""
-    result = result + "Summary\n"
-    result = result + "-------\n"
+    result = "Summary\n-------\n"
 
     total_phyloc = 0
     counts = []
@@ -126,11 +122,9 @@ def show_summary(lang_stats):
 
     for lang in sorted_counts:
         name, count = lang
-        result = result + name + ': {0:.2%}\n'.format(float(count)/total_phyloc)
+        result += name + ': {0:.2%}\n'.format(float(count)/total_phyloc)
 
-    result = result + "\n"
-    result = result + "TOTAL physical SLOC : " + format_thousands(total_phyloc) + "\n"
-    result = result + "\n"
+    result += "\nTOTAL physical SLOC : " + format_thousands(total_phyloc) + "\n\n"
     
     return result
 
