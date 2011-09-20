@@ -1,8 +1,7 @@
 #!/usr/bin/python
 from languages import *
 import wx
-from math import radians
-from wx.lib.agw.piectrl import PieCtrl, PiePart
+from langctrl import LangPieCtrl
 import wx.lib.agw.pyprogress as Progress
 import os
 import locale
@@ -96,7 +95,7 @@ class MyFrame(wx.Frame):
             self.stats.WriteText(text)
             self.stats.SetEditable(False)
 
-            self.langpie = create_langpie(self, lang_stats)            
+            self.langpie = LangPieCtrl(self, lang_stats)            
        
             self.SetStatusText("Done.")
             self.sizer.Add(self.langpie, 1, wx.EXPAND | wx.ALIGN_LEFT)
@@ -107,51 +106,7 @@ class MyFrame(wx.Frame):
             self.Layout()
         else:
             dialog.Destroy()
-
-def create_langpie(parent, lang_stats):
-    langpie = PieCtrl(parent, -1, wx.DefaultPosition, size=(400,600))
-    langpie.SetAngle(radians(25))
-    langpie.GetLegend().SetTransparent(True)
-    langpie.GetLegend().SetHorizontalBorder(10)
-    langpie.GetLegend().SetWindowStyle(wx.STATIC_BORDER)
-    langpie.GetLegend().SetLabelFont(wx.Font(10, wx.FONTFAMILY_DEFAULT,
-                                                 wx.FONTSTYLE_NORMAL,
-                                                 wx.FONTWEIGHT_NORMAL,
-                                                 False, "Courier New"))
-    langpie.GetLegend().SetLabelColour(wx.Colour(0, 0, 127))
-
-    colours = [ wx.Colour(200, 50, 50) ,
-                wx.Colour(50, 200, 50) ,
-                wx.Colour(50, 50, 200) ,
-                wx.Colour(100, 0, 200) ,
-                wx.Colour(200, 200, 0) ,
-                wx.Colour(0, 0, 200) ,
-                wx.Colour(200, 0, 200) ,
-                wx.Colour(0, 200, 200) ,
-                wx.Colour(0, 0, 50) ,
-                wx.Colour(0, 50, 0) ]
-        
-    colour = 0
-    counts = []
-    for lang in lang_stats:
-        name = lang
-        total = lang_stats[lang][pylocstats.TOTAL_LINES]
-        counts.append((name, total))
-
-    sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
-
-    for lang, count in sorted_counts:
-        part = PiePart()
-    
-        lines = pylocstats.format_thousands(count)
-        part.SetLabel(lang + " (" + str(lines) + ")")
-        part.SetValue(count)
-        part.SetColour(colours[colour])
-        colour = colour + 1
-        langpie._series.append(part)
-
-    return langpie
-    
+   
 def main():
     locale.setlocale(locale.LC_ALL, '')
     app = wx.App(False)
