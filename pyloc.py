@@ -84,12 +84,6 @@ class MyFrame(wx.Frame):
 
 
             dlg.Destroy()
-            text = "Folder   : " + self.dirname + "\n\n"
-            if not lang_stats:
-                text += "Could not find any code!\n"
-            else:
-                text += pylocstats.show_summary(lang_stats)
-                text += pylocstats.show_lang_stats(lang_stats)
         
             self.stats = LangStatsCtrl(self, self.dirname, lang_stats)
             self.langpie = LangPieCtrl(self, lang_stats)            
