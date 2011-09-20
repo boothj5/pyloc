@@ -7,22 +7,22 @@ import pylocstats
 
 class StatsProgressDialog(wx.ProgressDialog):
     def __init__(self, parent, dirname, lang_stats, num_files):
-        dlg = wx.ProgressDialog("PYLOC Scan",
-                                "Scanning source files...",
-                                maximum = num_files,
-                                parent=parent,
-                                style = wx.PD_APP_MODAL
-                                #| wx.PD_ELAPSED_TIME
-                                | wx.PD_AUTO_HIDE
-                                #| wx.PD_ESTIMATED_TIME
-                                | wx.PD_REMAINING_TIME
-                               )
+        wx.ProgressDialog.__init__(self, "PYLOC Scan",
+                                   "Scanning source files...",
+                                    maximum = num_files,
+                                    parent=parent,
+                                    style = wx.PD_APP_MODAL
+                                    #| wx.PD_ELAPSED_TIME
+                                    | wx.PD_AUTO_HIDE
+                                    #| wx.PD_ESTIMATED_TIME
+                                    | wx.PD_REMAINING_TIME
+                                   )
 
         count = 0
         for directory, dirnames, filenames in os.walk(dirname):
             for filename in filenames:
                 count += 1
-                dlg.Update(count)
+                self.Update(count)
                 basename, extension = os.path.splitext(filename)
                 for lang in languages:
                     if extension in languages[lang][EXTENSIONS]:
@@ -34,7 +34,7 @@ class StatsProgressDialog(wx.ProgressDialog):
                                                  pylocstats.TOTAL_LINES: 0 }
                         lang_stats[lang][pylocstats.SRC_FILES] = lang_stats[lang][pylocstats.SRC_FILES] + 1
                         pylocstats.process_file(directory + "/" + filename, lang, lang_stats)
-        dlg.Destroy()
+        self.Destroy()
 
 
 class LangStatsCtrl(wx.TextCtrl):
