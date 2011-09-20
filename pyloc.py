@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from languages import *
 import wx
-from langctrl import LangPieCtrl, LangStatsCtrl
+from langctrl import LangPieCtrl, LangStatsCtrl, StatsProgressDialog
 import wx.lib.agw.pyprogress as Progress
 import os
 import locale
@@ -53,38 +53,9 @@ class MyFrame(wx.Frame):
             num_files = sum((len(f) for _, _, f in os.walk(self.dirname)))
 
             self.SetStatusText("Scanning...")
-            dlg = wx.ProgressDialog("PYLOC Scan",
-                                    "Scanning source files...",
-                                    maximum = num_files,
-                                    parent=self,
-                                    style = wx.PD_APP_MODAL
-                                    #| wx.PD_ELAPSED_TIME
-                                    | wx.PD_AUTO_HIDE
-                                    #| wx.PD_ESTIMATED_TIME
-                                    | wx.PD_REMAINING_TIME
-                                   )
- 
-            count = 0
- 
-            for directory, dirnames, filenames in os.walk(self.dirname):
-                for filename in filenames:
-                    count += 1
-                    dlg.Update(count)
-                    basename, extension = os.path.splitext(filename)
-                    for lang in languages:
-                        if extension in languages[lang][EXTENSIONS]:
-                            if not lang in lang_stats:
-                                lang_stats[lang] = { pylocstats.SRC_FILES: 0 ,
-                                                     pylocstats.CODE_LINES: 0 ,
-                                                     pylocstats.COMM_LINES: 0 ,
-                                                     pylocstats.WHITESPACE: 0 ,
-                                                     pylocstats.TOTAL_LINES: 0 }
-                            lang_stats[lang][pylocstats.SRC_FILES] = lang_stats[lang][pylocstats.SRC_FILES] + 1
-                            pylocstats.process_file(directory + "/" + filename, lang, lang_stats)
 
-
-            dlg.Destroy()
-        
+            StatsProgressDialog(self, self.dirname, lang_stats, num_files)
+       
             self.stats = LangStatsCtrl(self, self.dirname, lang_stats)
             self.langpie = LangPieCtrl(self, lang_stats)            
        
@@ -97,7 +68,7 @@ class MyFrame(wx.Frame):
             self.Layout()
         else:
             dialog.Destroy()
-   
+
 def main():
     locale.setlocale(locale.LC_ALL, '')
     app = wx.App(False)

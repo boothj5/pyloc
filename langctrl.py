@@ -1,7 +1,41 @@
 import wx
+import os
 from math import radians
 from wx.lib.agw.piectrl import PieCtrl, PiePart
+from languages import *
 import pylocstats
+
+class StatsProgressDialog(wx.ProgressDialog):
+    def __init__(self, parent, dirname, lang_stats, num_files):
+        dlg = wx.ProgressDialog("PYLOC Scan",
+                                "Scanning source files...",
+                                maximum = num_files,
+                                parent=parent,
+                                style = wx.PD_APP_MODAL
+                                #| wx.PD_ELAPSED_TIME
+                                | wx.PD_AUTO_HIDE
+                                #| wx.PD_ESTIMATED_TIME
+                                | wx.PD_REMAINING_TIME
+                               )
+
+        count = 0
+        for directory, dirnames, filenames in os.walk(dirname):
+            for filename in filenames:
+                count += 1
+                dlg.Update(count)
+                basename, extension = os.path.splitext(filename)
+                for lang in languages:
+                    if extension in languages[lang][EXTENSIONS]:
+                        if not lang in lang_stats:
+                            lang_stats[lang] = { pylocstats.SRC_FILES: 0 ,
+                                                 pylocstats.CODE_LINES: 0 ,
+                                                 pylocstats.COMM_LINES: 0 ,
+                                                 pylocstats.WHITESPACE: 0 ,
+                                                 pylocstats.TOTAL_LINES: 0 }
+                        lang_stats[lang][pylocstats.SRC_FILES] = lang_stats[lang][pylocstats.SRC_FILES] + 1
+                        pylocstats.process_file(directory + "/" + filename, lang, lang_stats)
+        dlg.Destroy()
+
 
 class LangStatsCtrl(wx.TextCtrl):
     def __init__(self, parent, dirname, lang_stats):
