@@ -3,6 +3,20 @@ from math import radians
 from wx.lib.agw.piectrl import PieCtrl, PiePart
 import pylocstats
 
+class LangStatsCtrl(wx.TextCtrl):
+    def __init__(self, parent, dirname, lang_stats):
+        wx.TextCtrl.__init__(self, parent, style=wx.TE_MULTILINE, size=(400, 600))
+        text = "Folder   : " + dirname + "\n\n"
+        if not lang_stats:
+            text += "Could not find any code!\n"
+        else:
+            text += pylocstats.show_summary(lang_stats)
+            text += pylocstats.show_lang_stats(lang_stats)
+
+        self.WriteText(text)
+        self.SetEditable(False)
+
+
 class LangPieCtrl(PieCtrl):
     def __init__(self, parent, lang_stats):
         PieCtrl.__init__(self, parent, -1, wx.DefaultPosition, size=(400,600))

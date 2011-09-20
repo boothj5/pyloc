@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from languages import *
 import wx
-from langctrl import LangPieCtrl
+from langctrl import LangPieCtrl, LangStatsCtrl
 import wx.lib.agw.pyprogress as Progress
 import os
 import locale
@@ -91,10 +91,7 @@ class MyFrame(wx.Frame):
                 text += pylocstats.show_summary(lang_stats)
                 text += pylocstats.show_lang_stats(lang_stats)
         
-            self.stats = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(400,600))
-            self.stats.WriteText(text)
-            self.stats.SetEditable(False)
-
+            self.stats = LangStatsCtrl(self, self.dirname, lang_stats)
             self.langpie = LangPieCtrl(self, lang_stats)            
        
             self.SetStatusText("Done.")
