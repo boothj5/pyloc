@@ -7,7 +7,7 @@ import os
 import locale
 import pylocstats
 
-class MyFrame(wx.Frame):
+class PylocFrame(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title, size=(800,600))
 
@@ -72,7 +72,7 @@ class MyFrame(wx.Frame):
 def main():
     locale.setlocale(locale.LC_ALL, '')
     app = wx.App(False)
-    frame = MyFrame(None, "PYLOC")
+    frame = PylocFrame(None, "PYLOC")
     frame.Show(True)
 #    app.SetTopWindow(frame)
     app.MainLoop()
