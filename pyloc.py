@@ -50,11 +50,7 @@ class MyFrame(wx.Frame):
             self.sizer.DeleteWindows()
             lang_stats = {}
  
-            num_files = 0 ;
-
-            for root, subFolders, files in os.walk(dirname):
-                for f in files:
-                    num_files = num_files + 1 ;
+            num_files = sum((len(f) for _, _, f in os.walk(dirname)))
 
             self.SetStatusText("Scanning...")
             dlg = wx.ProgressDialog("PYLOC Scan",
