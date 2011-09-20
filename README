@@ -1,4 +1,17 @@
-Usage: pyloc.py directory [-v]
+Simple LOC counter for different languages, shows a pie chart and some stats.
+
+The GUI requires:
+
+- Python 2.6+
+- WxPython http://www.wxpython.org/
+
+To run:
+
+    pyloc.py
+
+To run in console mode, which just outputs the stats:
+
+Usage: pylocstats.py directory [-v]
 
 Where directory is the directory to scan and -v will cause verbose output.
 

@@ -12,6 +12,7 @@ SHELL = "Shell"
 SCHEME = "Scheme"
 LUA = "Lua"
 XML = "XML"
+JS = "Javascript"
 
 # language definitions
 languages = { JAVA:
@@ -48,6 +49,11 @@ languages = { JAVA:
                 { EXTENSIONS:    [ ".scm" ] ,
                   LINECOMMENTS:  ";" ,
                   BLOCKCOMMENTS: [ ( "#|" , "|#" ) ] } ,
+
+              JS:
+                { EXTENSIONS:    [ ".js" ] ,
+                  LINECOMMENTS:  "//" ,
+                  BLOCKCOMMENTS: [ ( "/*" , "*/" ) ] } ,
 
               XML:
                 { EXTENSIONS:    [ ".xml" ] ,

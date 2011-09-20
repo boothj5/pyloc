@@ -119,9 +119,8 @@ def show_summary(lang_stats):
     counts = []
     for lang in lang_stats:
         total_phyloc = total_phyloc + lang_stats[lang][TOTAL_LINES]
-        name = lang
         total = lang_stats[lang][TOTAL_LINES]
-        counts.append((name, total))
+        counts.append((lang, total))
 
     sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
 

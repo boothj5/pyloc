@@ -12,6 +12,8 @@ class MyFrame(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title, size=(800,600))
 
+        self.dirname = ""
+
         self.CreateStatusBar()
 
         filemenu = wx.Menu()
@@ -40,17 +42,16 @@ class MyFrame(wx.Frame):
         self.Close(True)
 
     def on_open_dir(self, event):
-        dirname = ""
-        dialog = wx.DirDialog(self, "Choose a directory")
+        dialog = wx.DirDialog(self, "Choose a directory", self.dirname)
         action = dialog.ShowModal() 
         if action == wx.ID_OK:
             self.SetStatusText("Preparing...")
-            dirname = dialog.GetPath()
+            self.dirname = dialog.GetPath()
             dialog.Destroy()
             self.sizer.DeleteWindows()
             lang_stats = {}
  
-            num_files = sum((len(f) for _, _, f in os.walk(dirname)))
+            num_files = sum((len(f) for _, _, f in os.walk(self.dirname)))
 
             self.SetStatusText("Scanning...")
             dlg = wx.ProgressDialog("PYLOC Scan",
@@ -66,7 +67,7 @@ class MyFrame(wx.Frame):
  
             count = 0
  
-            for directory, dirnames, filenames in os.walk(dirname):
+            for directory, dirnames, filenames in os.walk(self.dirname):
                 for filename in filenames:
                     count += 1
                     dlg.Update(count)
@@ -85,7 +86,7 @@ class MyFrame(wx.Frame):
 
             dlg.Destroy()
             text = "\n" + "PYLOC\n" + "-----\n"
-            text = text + "Folder   : " + dirname + "\n\n"
+            text = text + "Folder   : " + self.dirname + "\n\n"
             if not lang_stats:
                 text = text + "Could not find any code!\n"
             else:
