@@ -39,7 +39,7 @@ class StatsProgressDialog(wx.ProgressDialog):
 
 class LangStatsCtrl(wx.TextCtrl):
     def __init__(self, parent, dirname, lang_stats):
-        wx.TextCtrl.__init__(self, parent, style=wx.TE_MULTILINE, size=(400, 600))
+        wx.TextCtrl.__init__(self, parent, style=wx.TE_MULTILINE)
         text = "Folder   : " + dirname + "\n\n"
         if not lang_stats:
             text += "Could not find any code!\n"
@@ -53,7 +53,7 @@ class LangStatsCtrl(wx.TextCtrl):
 
 class LangPieCtrl(PieCtrl):
     def __init__(self, parent, lang_stats):
-        PieCtrl.__init__(self, parent, -1, wx.DefaultPosition, size=(400,600))
+        PieCtrl.__init__(self, parent, -1, wx.DefaultPosition)
         self.SetAngle(radians(25))
         self.GetLegend().SetTransparent(True)
         self.GetLegend().SetHorizontalBorder(10)

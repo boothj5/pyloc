@@ -57,14 +57,14 @@ class PylocFrame(wx.Frame):
             StatsProgressDialog(self, self.dirname, lang_stats, num_files)
        
             self.stats = LangStatsCtrl(self, self.dirname, lang_stats)
+            self.langpie = LangStatsCtrl(self, self.dirname, lang_stats)
             self.langpie = LangPieCtrl(self, lang_stats)            
        
             self.SetStatusText("Done.")
-            self.sizer.Add(self.langpie, 1, wx.EXPAND | wx.ALIGN_LEFT)
-            self.sizer.Add(self.stats, 1, wx.EXPAND | wx.ALIGN_RIGHT)
+            self.sizer.Add(self.langpie, 1, wx.EXPAND)
+            self.sizer.Add(self.stats, 1, wx.EXPAND)
             self.SetSizer(self.sizer)
-            self.SetAutoLayout(1) 
-            self.sizer.Fit(self)
+            self.SetAutoLayout(True) 
             self.Layout()
         else:
             dialog.Destroy()
