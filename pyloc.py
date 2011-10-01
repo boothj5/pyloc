@@ -5,7 +5,7 @@ from langctrl import LangPieCtrl, LangStatsCtrl, StatsProgressDialog
 import wx.lib.agw.pyprogress as Progress
 import os
 import locale
-import pylocstats
+from pylocstats import init_stats
 
 class PylocFrame(wx.Frame):
     def __init__(self, parent, title):
@@ -54,7 +54,10 @@ class PylocFrame(wx.Frame):
 
             self.SetStatusText("Scanning...")
 
-            StatsProgressDialog(self, self.dirname, lang_stats, num_files)
+            progressDlg = StatsProgressDialog(self, self.dirname, lang_stats, num_files)
+            for count in init_stats(self.dirname, lang_stats):
+                progressDlg.Update(count)
+            progressDlg.Destroy()
        
             self.stats = LangStatsCtrl(self, self.dirname, lang_stats)
             self.langpie = LangPieCtrl(self, lang_stats)            

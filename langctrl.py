@@ -18,25 +18,6 @@ class StatsProgressDialog(wx.ProgressDialog):
                                     | wx.PD_REMAINING_TIME
                                    )
 
-        count = 0
-        for directory, dirnames, filenames in os.walk(dirname):
-            for filename in filenames:
-                count += 1
-                self.Update(count)
-                basename, extension = os.path.splitext(filename)
-                for lang in languages:
-                    if extension in languages[lang][EXTENSIONS]:
-                        if not lang in lang_stats:
-                            lang_stats[lang] = { pylocstats.SRC_FILES: 0 ,
-                                                 pylocstats.CODE_LINES: 0 ,
-                                                 pylocstats.COMM_LINES: 0 ,
-                                                 pylocstats.WHITESPACE: 0 ,
-                                                 pylocstats.TOTAL_LINES: 0 }
-                        lang_stats[lang][pylocstats.SRC_FILES] = lang_stats[lang][pylocstats.SRC_FILES] + 1
-                        pylocstats.process_file(directory + "/" + filename, lang, lang_stats)
-        self.Destroy()
-
-
 class LangStatsCtrl(wx.TextCtrl):
     def __init__(self, parent, dirname, lang_stats):
         wx.TextCtrl.__init__(self, parent, style=wx.TE_MULTILINE)

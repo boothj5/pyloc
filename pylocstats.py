@@ -72,8 +72,11 @@ def line_type(line, lang):
         return CODE
 
 def init_stats(directory, lang_stats):
+    count = 0
     for dirname, dirnames, filenames in os.walk(directory):
         for filename in filenames:
+            count += 1
+            yield count
             basename, extension = os.path.splitext(filename)
             for lang in languages:
                 if extension in languages[lang][EXTENSIONS]:
@@ -140,7 +143,7 @@ def main():
     if not directory:
         print "You must specify a directory"
     else:
-        init_stats(directory, lang_stats)
+        for _ in init_stats(directory, lang_stats) : pass
         print
         print "PYLOC"
         print "-----"
