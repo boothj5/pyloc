@@ -111,15 +111,20 @@ def show_lang_stats(lang_stats):
         result += "\tPhysical SLOC : " + format_thousands(lang_stats[lang][TOTAL_LINES]) + "\n\n"
     return result
 
+def calc_total(lang_stats):
+    total = 0
+    for lang in lang_stats:
+        total += lang_stats[lang][TOTAL_LINES]
+    return total
+
 def show_summary(lang_stats):
     result = "Summary\n-------\n"
+    
+    total_phyloc = calc_total(lang_stats)
 
-    total_phyloc = 0
     counts = []
     for lang in lang_stats:
-        total_phyloc = total_phyloc + lang_stats[lang][TOTAL_LINES]
-        total = lang_stats[lang][TOTAL_LINES]
-        counts.append((lang, total))
+        counts.append((lang, lang_stats[lang][TOTAL_LINES]))
 
     sorted_counts = reversed(sorted(counts, key=lambda l: l[1]))
 

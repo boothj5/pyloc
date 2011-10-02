@@ -5,11 +5,11 @@ from langctrl import LangPieCtrl, LangStatsCtrl, StatsProgressDialog
 import wx.lib.agw.pyprogress as Progress
 import os
 import locale
-from pylocstats import init_stats
+from pylocstats import init_stats, calc_total, format_thousands
 
 class PylocFrame(wx.Frame):
     def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(800,600))
+        wx.Frame.__init__(self, parent, title=title, size=(1000,800))
 
         self.dirname = ""
 
@@ -49,24 +49,45 @@ class PylocFrame(wx.Frame):
             dialog.Destroy()
             self.sizer.DeleteWindows()
             lang_stats = {}
- 
             num_files = sum((len(f) for _, _, f in os.walk(self.dirname)))
-
             self.SetStatusText("Scanning...")
-
             progressDlg = StatsProgressDialog(self, self.dirname, lang_stats, num_files)
+
             for count in init_stats(self.dirname, lang_stats):
                 progressDlg.Update(count)
+
             progressDlg.Destroy()
-       
-            self.stats = LangStatsCtrl(self, self.dirname, lang_stats)
-            self.langpie = LangPieCtrl(self, lang_stats)            
-       
+            total = calc_total(lang_stats)
+            formatted_total = format_thousands(total)
             self.SetStatusText("Done.")
+
+            # left
+            self.langpie = LangPieCtrl(self, lang_stats)            
+
+            # right
+            self.rightpanel = wx.Panel(self, -1, style=wx.SIMPLE_BORDER)
+
+            # right top    
+            self.totaltext = wx.StaticText(self.rightpanel, -1, "Total Physical LOC: " + formatted_total, style=wx.ALIGN_CENTRE)
+            # right middle
+            self.langchooserpanel = wx.Panel(self.rightpanel, -1, style=wx.SIMPLE_BORDER)
+            # right bottom
+            self.stats = LangStatsCtrl(self.rightpanel, self.dirname, lang_stats)
+
+            # set up right sizer, and layout right panel
+            rightsizer = wx.BoxSizer(wx.VERTICAL)
+            rightsizer.Add(self.totaltext, 1, wx.CENTRE)
+            rightsizer.Add(self.langchooserpanel, 1, wx.EXPAND)
+            rightsizer.Add(self.stats, 10, wx.EXPAND)
+            self.rightpanel.SetAutoLayout(True)
+            self.rightpanel.SetSizer(rightsizer)
+            self.rightpanel.Layout()
+
+            # set up main sizer, with left and right and layout
             self.sizer.Add(self.langpie, 1, wx.EXPAND)
-            self.sizer.Add(self.stats, 1, wx.EXPAND)
-            self.SetSizer(self.sizer)
+            self.sizer.Add(self.rightpanel, 1, wx.EXPAND)
             self.SetAutoLayout(True) 
+            self.SetSizer(self.sizer)
             self.Layout()
         else:
             dialog.Destroy()
