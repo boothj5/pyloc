@@ -13,6 +13,8 @@ SCHEME = "Scheme"
 LUA = "Lua"
 XML = "XML"
 JS = "Javascript"
+COMMON_LISP = "Common Lisp"
+RUBY = "Ruby"
 
 # language definitions
 languages = { JAVA:
@@ -49,6 +51,16 @@ languages = { JAVA:
                 { EXTENSIONS:    [ ".scm" ] ,
                   LINECOMMENTS:  ";" ,
                   BLOCKCOMMENTS: [ ( "#|" , "|#" ) ] } ,
+
+              COMMON_LISP:
+                { EXTENSIONS:    [ ".lisp" , ".cl" ] ,
+                  LINECOMMENTS:  ";" ,
+                  BLOCKCOMMENTS: [ ( "#|" , "|#" ) ] } ,
+              
+              RUBY:
+                { EXTENSIONS:    [ ".rb" ] ,
+                  LINECOMMENTS:  "#" ,
+                  BLOCKCOMMENTS: [ ( "=begin" , "=end" ) ] } ,
 
               JS:
                 { EXTENSIONS:    [ ".js" ] ,
