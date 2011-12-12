@@ -15,6 +15,7 @@ XML = "XML"
 JS = "Javascript"
 COMMON_LISP = "Common Lisp"
 RUBY = "Ruby"
+SMALLTALK = "Smalltalk"
 
 # language definitions
 languages = { JAVA:
@@ -70,6 +71,10 @@ languages = { JAVA:
               XML:
                 { EXTENSIONS:    [ ".xml" ] ,
                   BLOCKCOMMENTS: [ ( "<!--" , "-->" ) ] } ,
+
+              SMALLTALK:
+                { EXTENSIONS:    [ ".st" ] ,
+                  BLOCKCOMMENTS: [ ( "\"" , "\"" ) ] } ,
 
               LUA :
                 { EXTENSIONS:    [ ".lua" ] ,
