@@ -57,6 +57,9 @@ class LangPieCtrl(PieCtrl):
                     wx.Colour(0, 25, 50) ,
                     wx.Colour(25, 0, 50) ,
                     wx.Colour(0, 100, 50) ,
+                    wx.Colour(175, 175, 50) ,
+                    wx.Colour(50, 100, 175) ,
+                    wx.Colour(175, 100, 175) ,
                     wx.Colour(0, 50, 0) ]
 
         colour = 0

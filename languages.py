@@ -8,6 +8,7 @@ JSP = "JSP"
 HASKELL = "Haskell"
 PYTHON = "Python"
 C = "C"
+CPP = "C++"
 SHELL = "Shell"
 SCHEME = "Scheme"
 LUA = "Lua"
@@ -37,6 +38,11 @@ languages = { JAVA:
 
               C:
                 { EXTENSIONS:    [ ".c" , ".h" ] ,
+                  LINECOMMENTS:  "//" ,
+                  BLOCKCOMMENTS: [ ( "/*" , "*/" ) ] } ,
+
+              CPP:
+                { EXTENSIONS:    [ ".cpp" , ".hpp" ] ,
                   LINECOMMENTS:  "//" ,
                   BLOCKCOMMENTS: [ ( "/*" , "*/" ) ] } ,
 
