@@ -34,46 +34,111 @@ Example basic output:
 Example verbose output:
 -----------------------
 
-[james@collingwood pyloc]$ ./pyloc.py /home/james/projects-svn/mosaic/src/ -v
+[james@collingwood pyloc]$ ./pylocstats.py -v ../
 
     PYLOC
     -----
-    Folder   : /home/james/projects-svn/mosaic/src/
+    Folder   : ../
 
-    XML (300 files) :
-            Code       : 71,584
-            Comments   : 1,448
-            Whitespace : 1,775
+    XML (1 files) :
+            Code       : 57
+            Comments   : 0
+            Whitespace : 10
 
-            Physical SLOC : 74,807
+            Physical SLOC : 67
 
-    JSP (1,040 files) :
-            Code       : 109,318
-            Comments   : 25,220
-            Whitespace : 10,834
+    C (121 files) :
+            Code       : 12,219
+            Comments   : 2,965
+            Whitespace : 2,789
 
-            Physical SLOC : 145,372
+            Physical SLOC : 17,973
 
-    Shell (2 files) :
-            Code       : 107
-            Comments   : 26
-            Whitespace : 27
+    Shell (27 files) :
+            Code       : 260
+            Comments   : 90
+            Whitespace : 134
 
-            Physical SLOC : 160
-
-    Java (11,548 files) :
-            Code       : 890,396
-            Comments   : 337,247
-            Whitespace : 221,236
-
-            Physical SLOC : 1,448,879
-
+            Physical SLOC : 484
+    
+    Java (67 files) :
+            Code       : 4,371
+            Comments   : 84
+            Whitespace : 1,196
+    
+            Physical SLOC : 5,651
+    
+    Python (29 files) :
+            Code       : 1,630
+            Comments   : 105
+            Whitespace : 343
+    
+            Physical SLOC : 2,078
+    
+    Javascript (1 files) :
+            Code       : 20
+            Comments   : 42
+            Whitespace : 2
+    
+            Physical SLOC : 64
+    
+    Common Lisp (24 files) :
+            Code       : 1,230
+            Comments   : 146
+            Whitespace : 273
+    
+            Physical SLOC : 1,649
+    
+    Lua (3 files) :
+            Code       : 619
+            Comments   : 179
+            Whitespace : 102
+    
+            Physical SLOC : 900
+    
+    Haskell (31 files) :
+            Code       : 2,174
+            Comments   : 253
+            Whitespace : 544
+    
+            Physical SLOC : 2,971
+    
+    C++ (51 files) :
+            Code       : 3,010
+            Comments   : 117
+            Whitespace : 655
+    
+            Physical SLOC : 3,782
+    
+    Ruby (10 files) :
+            Code       : 1,292
+            Comments   : 0
+            Whitespace : 304
+    
+            Physical SLOC : 1,596
+    
+    Smalltalk (10 files) :
+            Code       : 965
+            Comments   : 0
+            Whitespace : 212
+    
+            Physical SLOC : 1,177
+    
+    
     Summary
     -------
-    Java: 86.80%
-    JSP: 8.71%
-    XML: 4.48%
-    Shell: 0.01%
-
-    TOTAL physical SLOC : 1,669,218
-
+    C: 46.81%
+    Java: 14.72%
+    C++: 9.85%
+    Haskell: 7.74%
+    Python: 5.41%
+    Common Lisp: 4.30%
+    Ruby: 4.16%
+    Smalltalk: 3.07%
+    Lua: 2.34%
+    Shell: 1.26%
+    XML: 0.17%
+    Javascript: 0.17%
+    
+    TOTAL physical SLOC : 38,392
+    
