@@ -1,7 +1,7 @@
 #
 # langctrl.py
 #
-# Copyright (C) 2012 James Booth <boothj5@gmail.com>
+# Copyright (C) 2011, 2012 James Booth <boothj5@gmail.com>
 # 
 # This file is part of Pyloc.
 #
