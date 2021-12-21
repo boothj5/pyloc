@@ -1,9 +1,9 @@
 #!/usr/bin/python
-# 
+#
 # pyloc.py
 #
 # Copyright (C) 2011, 2012 James Booth <boothj5@gmail.com>
-# 
+#
 # This file is part of Pyloc.
 #
 # Pyloc is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ class PylocFrame(wx.Frame):
         # add menubar
         menubar = wx.MenuBar()
         menubar.Append(filemenu, "&File")
-        self.SetMenuBar(menubar)       
+        self.SetMenuBar(menubar)
 
         # bind menu events to handlers
         self.Bind(wx.EVT_MENU, self.on_open_dir, menu_open_dir)
@@ -68,7 +68,7 @@ class PylocFrame(wx.Frame):
 
         # show dialog to choose directory
         dialog = wx.DirDialog(self, "Choose a directory", self.dirname)
-        action = dialog.ShowModal() 
+        action = dialog.ShowModal()
 
         # if directory chosen
         if action == wx.ID_OK:
@@ -77,7 +77,7 @@ class PylocFrame(wx.Frame):
             dialog.Destroy()
 
             # clear the main sizer
-            self.sizer.DeleteWindows()
+            self.sizer.Clear(True)
 
             # get lang stats showing progress
             lang_stats = {}
@@ -96,7 +96,7 @@ class PylocFrame(wx.Frame):
             formatted_total = format_thousands(total)
 
             # set up controls
-            self.langpie = LangPieCtrl(self, lang_stats)            
+            self.langpie = LangPieCtrl(self, lang_stats)
             self.rightpanel = wx.Panel(self, -1, style=wx.SIMPLE_BORDER)
 
             # right panel controls
@@ -105,13 +105,13 @@ class PylocFrame(wx.Frame):
             self.stats = LangStatsCtrl(self.rightpanel, self.dirname, lang_stats)
 
             # summary panel text controls
-            self.dirlabel = wx.StaticText(self.summarypanel, -1, 
+            self.dirlabel = wx.StaticText(self.summarypanel, -1,
                                           "Directory: ", style=wx.ALIGN_CENTRE)
             self.dirvalue = wx.StaticText(self.summarypanel, -1,
                                           self.dirname, style=wx.ALIGN_CENTRE)
-            self.totallabel = wx.StaticText(self.summarypanel, -1, 
+            self.totallabel = wx.StaticText(self.summarypanel, -1,
                                             "Total Physical LOC: ", style=wx.ALIGN_CENTRE)
-            self.totalvalue = wx.StaticText(self.summarypanel, -1, 
+            self.totalvalue = wx.StaticText(self.summarypanel, -1,
                                             formatted_total, style=wx.ALIGN_CENTRE)
 
 
@@ -137,7 +137,7 @@ class PylocFrame(wx.Frame):
             # set up and layout main sizer
             self.sizer.Add(self.langpie, 1, wx.EXPAND)
             self.sizer.Add(self.rightpanel, 1, wx.EXPAND)
-            self.SetAutoLayout(True) 
+            self.SetAutoLayout(True)
             self.SetSizer(self.sizer)
             self.Layout()
 
@@ -154,4 +154,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

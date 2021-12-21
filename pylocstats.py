@@ -1,9 +1,9 @@
 #!/usr/bin/python
-# 
+#
 # pylocstats.py
 #
 # Copyright (C) 2011, 2012 James Booth <boothj5@gmail.com>
-# 
+#
 # This file is part of Pyloc.
 #
 # Pyloc is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ def parse_opts():
     parser = OptionParser()
     parser.add_option("-v", "",
                       action="store_true", dest="verbose", default=False,
-                      help="Verbose output")    
+                      help="Verbose output")
 
     return parser.parse_args()
 
@@ -80,7 +80,7 @@ def is_comment(line, lang):
 
     if in_comment:
         return True
-    
+
     return False
 
 def line_type(line, lang):
@@ -101,11 +101,11 @@ def init_stats(directory, lang_stats):
             for lang in languages:
                 if extension in languages[lang][EXTENSIONS]:
                     if not lang in lang_stats:
-                        lang_stats[lang] = { SRC_FILES: 0 , 
-                                             CODE_LINES: 0 , 
+                        lang_stats[lang] = { SRC_FILES: 0 ,
+                                             CODE_LINES: 0 ,
                                              COMM_LINES: 0 ,
                                              WHITESPACE: 0 ,
-                                             TOTAL_LINES: 0 } 
+                                             TOTAL_LINES: 0 }
                     lang_stats[lang][SRC_FILES] = lang_stats[lang][SRC_FILES] + 1
                     process_file(dirname + "/" + filename, lang, lang_stats)
 
@@ -139,7 +139,7 @@ def calc_total(lang_stats):
 
 def show_summary(lang_stats):
     result = "Summary\n-------\n"
-    
+
     total_phyloc = calc_total(lang_stats)
 
     counts = []
@@ -153,11 +153,11 @@ def show_summary(lang_stats):
         result += name + ': {0:.2%}\n'.format(float(count)/total_phyloc)
 
     result += "\nTOTAL physical SLOC : " + format_thousands(total_phyloc) + "\n\n"
-    
+
     return result
 
 def format_thousands(number):
-    return locale.format("%d", number, grouping=True)
+    return locale.format_string("%d", number, grouping=True)
 
 def main():
     locale.setlocale(locale.LC_ALL, '')
@@ -166,17 +166,17 @@ def main():
     directory = args[0]
 
     if not directory:
-        print "You must specify a directory"
+        print("You must specify a directory")
     else:
         for _ in init_stats(directory, lang_stats) : pass
         print
-        print "PYLOC"
-        print "-----"
-        print "Folder   : " + directory
-        print
+        print("PYLOC")
+        print("-----")
+        print("Folder   : " + directory)
+        print("")
         if not lang_stats:
-            print "Could not find any code!"
-            print
+            print("Could not find any code!")
+            print("")
         else:
             if options.verbose:
                 result = show_lang_stats(lang_stats)

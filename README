@@ -2,7 +2,7 @@ Simple LOC counter for different languages, shows a pie chart and some stats.
 
 The GUI requires:
 
-- Python 2.6+
+- Python 3
 - WxPython http://www.wxpython.org/
 
 See http://www.boothj5.com/pyloc.shtml
